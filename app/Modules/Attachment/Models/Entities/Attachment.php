@@ -84,9 +84,7 @@ class Attachment extends AbstractModel
             $this->getAttribute('file_name'),
         ));
 
-        return $this->getFilesystem()->exists($filePath) && File::isFile($this->getFilesystem()->path($filePath)) ?
-            $this->getFilesystem()->url($filePath) :
-            $this->getDefaultImageAttribute();
+        return $this->getFilesystem()->url($filePath);
     }
 
     /**

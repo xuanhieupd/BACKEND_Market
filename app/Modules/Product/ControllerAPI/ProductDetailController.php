@@ -71,8 +71,8 @@ class ProductDetailController extends AbstractController
         if (!$productInfo) return $this->responseError('Không tìm thấy thông tin sản phẩm');
 
         $visitor->seenable($productInfo);
-
         $productInfo = $this->bindDisplay($productInfo);
+
         return new ProductDetailResource($productInfo);
     }
 
