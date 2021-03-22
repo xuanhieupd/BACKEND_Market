@@ -87,10 +87,9 @@ class ProductDetailController extends AbstractController
             ->where('user_id', auth()->id())
             ->first();
 
-
         if ($settingInfo) {
             $productInfo->setAttribute('canViewPrice', Constants::canViewPrice($settingInfo->getAttribute('display_id')));
-            $productInfo->setAttribute('canViewQuantity', Constants::canViewQuantity($settingInfo->getAttribute('value')));
+            $productInfo->setAttribute('canViewQuantity', Constants::canViewQuantity($settingInfo->getAttribute('display_id')));
 
             return $productInfo;
         }

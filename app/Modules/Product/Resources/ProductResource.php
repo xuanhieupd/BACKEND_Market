@@ -27,5 +27,4 @@ class ProductResource extends AbstractResource
         );
     }
 
-
 }

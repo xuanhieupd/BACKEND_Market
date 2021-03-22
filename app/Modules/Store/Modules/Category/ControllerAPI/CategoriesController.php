@@ -45,9 +45,13 @@ class CategoriesController extends AbstractController
      */
     public function actionIndex(Request $request)
     {
+        $storeInfo = $request->input('store');
+
         $products = $this->productRepo->getProducts()
             ->select(array('category_id'))
+            ->where('store_id', $storeInfo->getId())
             ->groupBy('category_id')
+            ->public()
             ->get();
 
         $categories = $this->categoryRepo->getCategories()

@@ -28,6 +28,7 @@ class ProductDetailResource extends AbstractResource
             'title' => $this->getAttribute('title'),
             'current_stock' => $this->getCurrentStock(),
             'total_stock' => $this->getTotalStock(),
+            'price' => $this->getMarketPrice(),
             'prices' => array(
                 'import' => $this->getImportPrice(),
                 'whole' => $this->getWholePrice(),

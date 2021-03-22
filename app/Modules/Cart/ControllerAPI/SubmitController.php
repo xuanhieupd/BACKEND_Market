@@ -26,6 +26,8 @@ use App\Modules\Product\Models\Repositories\Contracts\ProductInterface;
 use App\Modules\Product\Models\Repositories\Eloquents\ProductRepository;
 use App\Modules\Product\Models\Services\StockService;
 use App\Modules\Store\Models\Repositories\Eloquents\StoreRepository;
+use App\Modules\Store\Modules\SettingUser\Models\Repositories\Contracts\SettingUserInterface;
+use App\Modules\Store\Modules\SettingUser\Models\Repositories\Eloquents\SettingUserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +64,11 @@ class SubmitController extends AbstractController
     protected $productRepo;
 
     /**
+     * @var SettingUserRepository
+     */
+    protected $settingUserRepo;
+
+    /**
      * Constructor.
      *
      * @param $cartRepo
@@ -72,7 +79,8 @@ class SubmitController extends AbstractController
         StockService $stockService,
         ItemInterface $itemRepo,
         OrderInterface $orderRepo,
-        ProductInterface $productRepo
+        ProductInterface $productRepo,
+        SettingUserInterface $settingUserRepo
     )
     {
         $this->cartRepo = $cartRepo;
@@ -80,6 +88,7 @@ class SubmitController extends AbstractController
         $this->itemRepo = $itemRepo;
         $this->orderRepo = $orderRepo;
         $this->productRepo = $productRepo;
+        $this->settingUserRepo = $settingUserRepo;
     }
 
     /**
@@ -98,11 +107,18 @@ class SubmitController extends AbstractController
         $products = $this->productRepo->whereIn('product_id', $productIds)->get();
         $products = $this->productRepo->bindPrice($products, auth()->id());
 
+        $settings = $this->settingUserRepo->getSettings()
+            ->whereIn('store_id', CollectionHelper::pluckUnique($cartRows, 'store_id'))
+            ->where('user_id', auth()->id())
+            ->get();
+
         DB::beginTransaction();
         try {
             $itemInserts = collect();
 
             foreach ($this->splitByStores($cartRows) as $storeId => $storeItems) {
+                $settingInfo = $settings->where('store_id', $storeId)->first();
+
                 $itemProductIds = CollectionHelper::pluckUnique($storeItems, 'product_id')->toArray();
                 $productItems = $products->whereIn('product_id', $itemProductIds);
 
@@ -110,13 +126,14 @@ class SubmitController extends AbstractController
                     'action_id' => Order::ACTION_NO_LAI,
                     'store_id' => $storeId,
                     'user_id' => auth()->id(),
+                    'customer_id' => $settingInfo ? $settingInfo->getAttribute('customer_id') : -1,
                     'total_quantity' => $storeItems->sum('quantity'),
                     'total_price' => $storeItems->sum('total_price'),
                     'has_change_quantity' => GlobalConstants::STATUS_INACTIVE,
                     'has_change_price' => GlobalConstants::STATUS_INACTIVE,
                     'status' => $this->getOrderStatusByProducts($productItems),
                     'code' => null, 'total_receivable' => 0, 'total_expense' => 0,
-                    'customer_id' => null, 'warehouse_id' => null, 'manager_id' => null,
+                    'warehouse_id' => null, 'manager_id' => null,
                     'money_banking' => null, 'money_cash' => null,
                     'money_deposit' => null, 'money_fortune' => null,
                     'note' => ''

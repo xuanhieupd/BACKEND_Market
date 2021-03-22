@@ -37,12 +37,33 @@ class AllController extends AbstractController
      */
     public function actionIndex(Request $request)
     {
-        $categories = $this->categoryRepo->makeModel()
+        $rootInfo = $this->getRoot($request);
+
+        $builder = $this->categoryRepo->makeModel()
             ->select(array('category_id', 'title', 'parent_id', 'level', 'lft', 'rgt'))
             ->where('category_id', '!=', 0)
-            ->get();
+            ->where('lft', '>', $rootInfo->getAttribute('lft'))
+            ->where('rgt', '<', $rootInfo->getAttribute('rgt'));
 
+        $levelFromInput = $request->get('level');
+        if ($request->has('level') && is_numeric($levelFromInput)) {
+            $builder = $builder->level($levelFromInput);
+        }
+
+        $categories = $builder->get();
         return new RecursiveCategoriesResource($categories);
+    }
+
+    protected function getRoot(Request $request)
+    {
+        $parentIdFromInput = $request->get('parent_id');
+        $rootInfo = $this->categoryRepo->getCategoryById($parentIdFromInput)->first();
+
+        if (!$rootInfo) {
+            return $this->categoryRepo->getCategoryById(0)->first();
+        }
+
+        return $rootInfo;
     }
 
 }
