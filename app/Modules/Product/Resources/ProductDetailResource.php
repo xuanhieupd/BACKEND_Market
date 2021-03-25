@@ -41,6 +41,7 @@ class ProductDetailResource extends AbstractResource
             'datas' => new VariantResource($this->productVariants),
             'like_count' => $this->getLikeCountAttribute(),
             'is_liked' => $this->liked(Auth::user()),
+            'display_id' => $this->getAttribute('displayId'),
             'can_view_price' => !!$this->getAttribute('canViewPrice'),
             'can_view_quantity' => !!$this->getAttribute('canViewQuantity'),
         );

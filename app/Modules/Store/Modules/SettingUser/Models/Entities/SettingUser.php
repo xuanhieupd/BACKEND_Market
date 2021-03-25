@@ -34,4 +34,15 @@ class SettingUser extends AbstractModelRelation
             $this->getAttribute('user_id'),
         ));
     }
+
+    /**
+     * DisplayId
+     *
+     * @return string
+     * @author xuanhieupd
+     */
+    public function getDisplayId()
+    {
+        return $this->getAttribute('display_id');
+    }
 }

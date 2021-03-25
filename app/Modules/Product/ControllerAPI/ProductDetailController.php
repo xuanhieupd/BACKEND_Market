@@ -88,8 +88,9 @@ class ProductDetailController extends AbstractController
             ->first();
 
         if ($settingInfo) {
-            $productInfo->setAttribute('canViewPrice', Constants::canViewPrice($settingInfo->getAttribute('display_id')));
-            $productInfo->setAttribute('canViewQuantity', Constants::canViewQuantity($settingInfo->getAttribute('display_id')));
+            $productInfo->setAttribute('displayId', $settingInfo->getDisplayId());
+            $productInfo->setAttribute('canViewPrice', Constants::canViewPrice($settingInfo->getDisplayId()));
+            $productInfo->setAttribute('canViewQuantity', Constants::canViewQuantity($settingInfo->getDisplayId()));
 
             return $productInfo;
         }
