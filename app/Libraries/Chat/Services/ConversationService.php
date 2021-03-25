@@ -87,11 +87,11 @@ class ConversationService
     {
         $participantOneConversationIds = $this->conversation
             ->participantConversations($participantOne, true)
-            ->pluck('id');
+            ->pluck('conversation_id');
 
         $participantTwoConversationIds = $this->conversation
             ->participantConversations($participantTwo, true)
-            ->pluck('id');
+            ->pluck('conversation_id');
 
         $common = $this->getConversationsInCommon($participantOneConversationIds, $participantTwoConversationIds);
 

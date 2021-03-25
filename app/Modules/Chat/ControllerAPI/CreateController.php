@@ -37,7 +37,7 @@ class CreateController extends AbstractController
             $to = $this->to();
 
             $conversationInfo = Chat::conversations()->between($from, $to);
-            $conversationInfo = $conversationInfo ?? Chat::createConversation(array($from, $to));
+            $conversationInfo = $conversationInfo ?? Chat::createConversation(array($from, $to))->makeDirect();
 
             return new ConversationResource($conversationInfo);
         } catch (ParticipantException $participantException) {
