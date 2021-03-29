@@ -263,7 +263,11 @@ class Conversation extends BaseModel
      */
     public function participantConversations(Model $participant, bool $isDirectMessage = false): Collection
     {
-        $conversations = $participant->participation->pluck('conversation');
+        $participationCollection = $participant->participation;
+
+        $conversations = $participationCollection instanceof Collection ?
+            $participationCollection->pluck('conversation') :
+            collect();
 
         return $isDirectMessage ? $conversations->where('direct_message', 1) : $conversations;
     }

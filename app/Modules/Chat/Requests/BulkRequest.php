@@ -22,7 +22,7 @@ class BulkRequest extends AbstractRequest
             'attachment_ids' => 'array',
             'attachment_ids.*' => 'required|numeric',
             'target' => 'required',
-            'target_ids' => 'required|array',
+            'target_ids' => 'array',
         );
     }
 
