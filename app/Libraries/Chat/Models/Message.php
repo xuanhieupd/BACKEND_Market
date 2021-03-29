@@ -16,6 +16,7 @@ use App\Libraries\Chat\Eventing\EventGenerator;
 use App\Libraries\Chat\Eventing\MessageWasSent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 
 class Message extends BaseModel
 {
@@ -166,16 +167,34 @@ class Message extends BaseModel
         $conversationInfo->touch();
         $messageInfo->save();
 
-        if ($type === ConfigurationManager::CHAT_MESSAGE_TYPE_PRODUCT) {
-            $products = isset($messageParams['products']) ? $messageParams['products'] : collect();
-            $messageInfo->messageProducts()->sync(CollectionHelper::pluckUnique($products, 'product_id'));
-        }
+        $products = data_get($messageParams, 'products');
+        $attachments = data_get($messageParams, 'attachments');
 
-        if ($type === ConfigurationManager::CHAT_MESSAGE_TYPE_ATTACHMENT) {
-            $attachments = isset($messageParams['attachments']) ? $messageParams['attachments'] : collect();
-            $messageInfo->messageAttachments()->sync(CollectionHelper::pluckUnique($attachments, 'attachment_id'));
-        }
+        /* Đính kèm sản phẩm */
+        $products instanceof Collection && $products->isNotEmpty() ?
+            $messageInfo->messageProducts()->sync(CollectionHelper::pluckUnique($products, 'product_id')) :
+            null;
 
+        /* Đính kèm file ảnh / video */
+        $attachments instanceof Collection && $attachments->isNotEmpty() ?
+            $messageInfo->messageAttachments()->sync(CollectionHelper::pluckUnique($attachments, 'attachment_id')) :
+            null;
+
+        $this->broadcastAfterSend($conversationInfo, $participant, $messageInfo);
+        $this->createNotifications($messageInfo, $conversationInfo);
+
+        return $messageInfo;
+    }
+
+    /**
+     * Broadcast message
+     *
+     * @param $conversationInfo
+     * @param $participant
+     * @param $messageInfo
+     */
+    protected function broadcastAfterSend($conversationInfo, $participant, $messageInfo)
+    {
         $conversationInfo->load(array('participants'));
 
         foreach ($conversationInfo->participants as $participantItem) {
@@ -185,11 +204,6 @@ class Message extends BaseModel
                 broadcast(new MessageWasSent($participantItem, $messageInfo))->toOthers() :
                 event(new MessageWasSent($participantItem, $messageInfo));
         }
-
-
-        $this->createNotifications($messageInfo, $conversationInfo);
-
-        return $messageInfo;
     }
 
     /**

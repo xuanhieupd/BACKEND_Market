@@ -4,6 +4,8 @@ namespace App\Modules\Chat\ControllerAPI;
 
 use App\Base\AbstractController;
 use App\Modules\Chat\Exceptions\ParticipantException;
+use App\Modules\Chat\Models\Repositories\Contracts\ConversationInterface;
+use App\Modules\Chat\Models\Repositories\ConversationRepository;
 use App\Modules\Chat\Resources\ConversationResource;
 use App\Modules\Store\Models\Entities\Store;
 use App\Modules\Store\Models\Repositories\Contracts\StoreInterface;
@@ -21,6 +23,22 @@ class CreateController extends AbstractController
     protected $request;
 
     /**
+     * @var ConversationRepository
+     */
+    protected $conversationRepo;
+
+    /**
+     * Constructor.
+     *
+     * @param ConversationInterface $conversationRepo
+     * @author xuanhieupd
+     */
+    public function __construct(ConversationInterface $conversationRepo)
+    {
+        $this->conversationRepo = $conversationRepo;
+    }
+
+    /**
      * Tạo cuộc hội thoại
      *
      * @param Request $request
@@ -32,12 +50,7 @@ class CreateController extends AbstractController
     {
         try {
             $this->request = $request;
-
-            $from = $this->from();
-            $to = $this->to();
-
-            $conversationInfo = Chat::conversations()->between($from, $to);
-            $conversationInfo = $conversationInfo ?? Chat::createConversation(array($from, $to))->makeDirect();
+            $conversationInfo = $this->conversationRepo->betweenOrMakeConversation($this->from(), $this->to());
 
             return new ConversationResource($conversationInfo);
         } catch (ParticipantException $participantException) {

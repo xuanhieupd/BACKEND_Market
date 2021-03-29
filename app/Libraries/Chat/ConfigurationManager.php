@@ -13,6 +13,7 @@ class ConfigurationManager
     const CHAT_MESSAGE_TYPE_RECORD = 'record';
     const CHAT_MESSAGE_TYPE_PRODUCT = 'product';
     const CHAT_MESSAGE_TYPE_ATTACHMENT = 'attachment';
+    const CHAT_MESSAGE_TYPE_BULK = 'bulk';
 
     public static function paginationDefaultParameters()
     {

@@ -39,6 +39,7 @@ class ConversationsController extends AbstractController
      */
     protected function getAuthor()
     {
+//        return User::query()->orderBy('user_id', 'DESC')->first();
         return Auth::user();
     }
 

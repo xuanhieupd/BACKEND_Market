@@ -37,5 +37,7 @@ Route::group(array('middleware' => array('auth:api'), 'prefix' => 'store', 'as' 
             Route::post('/{conversationId}/record/send', array('as' => 'message.send.record', 'uses' => 'Store\Send\RecordController@actionIndex'));
             Route::post('/{conversationId}/product/send', array('as' => 'message.send.product', 'uses' => 'Store\Send\ProductController@actionIndex'));
         });
+
+        Route::post('/bulk', array('as' => 'bulk', 'uses' => 'Store\BulkController@actionIndex'));
     });
 });

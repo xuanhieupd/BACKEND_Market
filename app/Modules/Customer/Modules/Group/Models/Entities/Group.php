@@ -15,6 +15,7 @@ use App\Base\AbstractModel;
 class Group extends AbstractModel
 {
 
+    protected $connection = 'box';
     protected $table = 'hnw_customer_group';
     protected $primaryKey = 'group_id';
     public static $tableAlias = 'hnw_customer_group';
@@ -38,7 +39,7 @@ class Group extends AbstractModel
      */
     public function getTitle()
     {
-        return $this->getAttribute('title');
+        return $this->getAttribute('name');
     }
 
 }

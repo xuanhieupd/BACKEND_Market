@@ -32,6 +32,7 @@ class Customer extends AbstractModel implements ICustomer
 
     use CanPay;
 
+    protected $connection = 'box';
     protected $table = 'hnw_customer';
     protected $primaryKey = 'customer_id';
     public static $tableAlias = 'hnw_customer';

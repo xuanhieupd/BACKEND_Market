@@ -3,6 +3,10 @@
 namespace App\Modules\Store\Modules\SettingUser\Models\Entities;
 
 use App\Base\AbstractModelRelation;
+use App\Modules\Customer\Models\Entities\Customer;
+use App\Modules\User\Models\Entities\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SettingUser extends AbstractModelRelation
 {
@@ -45,4 +49,41 @@ class SettingUser extends AbstractModelRelation
     {
         return $this->getAttribute('display_id');
     }
+
+    /**
+     * Thông tin khách hàng
+     *
+     * @return BelongsTo
+     * @author xuanhieupd
+     */
+    public function settingUserCustomer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+    }
+
+    /**
+     * Thông tin người dùng
+     *
+     * @return BelongsTo
+     * @author xuanhieupd
+     */
+    public function settingUserUser()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+    /**
+     * Tìm khách hàng trong nhóm
+     *
+     * @param Builder $builder
+     * @param $groupIds
+     * @return Builder
+     */
+    public function scopeInGroup(Builder $builder, $groupIds)
+    {
+        return $builder->whereHas('settingUserCustomer', function ($childBuilder) use ($groupIds) {
+            return $childBuilder->whereIn('customer_group_id', $groupIds);
+        });
+    }
 }
+
