@@ -2,6 +2,7 @@
 
 namespace App\Modules\Chat\Models\Services;
 
+use App\Modules\Base\Helpers\CollectionHelper;
 use App\Modules\Chat\Constants\BulkConstants;
 use App\Modules\Chat\DAO\TargetDAO;
 use App\Modules\Store\Modules\SettingUser\Models\Repositories\Contracts\SettingUserInterface;
@@ -36,10 +37,12 @@ class TargetService
      */
     public function getAll($storeId)
     {
-        return $this->_getSettingUserModel()->getSettings()
+        $settings = $this->_getSettingUserModel()->getSettings()
             ->with(array('settingUserUser'))
             ->where('store_id', $storeId)
             ->get();
+
+        return CollectionHelper::pluckUnique($settings, 'settingUserUser');
     }
 
     /**
@@ -52,11 +55,13 @@ class TargetService
      */
     public function getAllInGroup($storeId, array $groupIds)
     {
-        return $this->_getSettingUserModel()->getSettings()
+        $settings = $this->_getSettingUserModel()->getSettings()
             ->with(array('settingUserUser'))
             ->where('store_id', $storeId)
             ->inGroup($groupIds)
             ->get();
+
+        return CollectionHelper::pluckUnique($settings, 'settingUserUser');
     }
 
     /**
@@ -69,11 +74,13 @@ class TargetService
      */
     public function getUsers($storeId, $userIds)
     {
-        return $this->_getSettingUserModel()->getSettings()
+        $settings = $this->_getSettingUserModel()->getSettings()
             ->with(array('settingUserUser'))
             ->where('store_id', $storeId)
             ->whereIn('user_id', $userIds)
             ->get();
+
+        return CollectionHelper::pluckUnique($settings, 'settingUserUser');
     }
 
     /**
