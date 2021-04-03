@@ -4,5 +4,6 @@ Route::group(array('middleware' => array('auth:api'), 'prefix' => 'cart', 'as' =
     Route::get('/', array('as' => 'index', 'uses' => 'IndexController@actionIndex'));
     Route::post('/add', array('as' => 'add', 'uses' => 'AddController@actionIndex'));
     Route::post('/submit', array('as' => 'submit', 'uses' => 'SubmitController@actionIndex'));
-    Route::post('/delete', array('as' => 'delete', 'uses' => 'DeleteCartController@actionIndex'));
+    Route::post('/delete', array('as' => 'delete', 'uses' => 'DeleteController@actionIndex'));
+    Route::post('/empty', array('as' => 'empty', 'uses' => 'EmptyController@actionIndex'));
 });

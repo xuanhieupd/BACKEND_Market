@@ -3,7 +3,7 @@
 /**
  * Order Cart Model
  *
- * @author shin_conan <xuanhieu.pd@gmail.com>
+ * @author xuanhieupd
  * @package Cart
  * @copyright (c) 04.10.2020, HNW
  */
@@ -19,10 +19,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OrderCart extends AbstractModel
 {
 
-    protected $table = 'hnw_shopping_cart';
+    protected $connection = 'box';
+    protected $table = 'hnw_order_cart';
     protected $primaryKey = 'cart_id';
-    public static $tableAlias = 'hnw_shopping_cart';
+    public static $tableAlias = 'hnw_order_cart';
 
+    /**
+     * @var string[]
+     */
     protected $fillable = array(
         'user_id',
         'store_id',
@@ -32,6 +36,9 @@ class OrderCart extends AbstractModel
         'price'
     );
 
+    /**
+     * @var string[]
+     */
     protected $casts = array(
         'quantity' => 'int',
         'price' => 'int',
@@ -41,7 +48,7 @@ class OrderCart extends AbstractModel
      * Alias for `cart_id`
      *
      * @return int
-     * @author shin_conan <xuanhieu.pd@gmail.com>
+     * @author xuanhieupd
      */
     public function getId()
     {

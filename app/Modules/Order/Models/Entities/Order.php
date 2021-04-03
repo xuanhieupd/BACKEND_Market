@@ -3,7 +3,7 @@
 /**
  * Order Model
  *
- * @author shin_conan <xuanhieu.pd@gmail.com>
+ * @author xuanhieupd
  * @package User
  * @copyright (c) 03.10.2020, HNW
  */
@@ -11,16 +11,15 @@
 namespace App\Modules\Order\Models\Entities;
 
 use App\Base\AbstractModel;
+use App\Base\Filterable;
 use App\Modules\Customer\Models\Entities\Customer;
 use App\Modules\Order\Events\EItemUpdated;
-use App\Base\Filterable;
-use App\Modules\Order\Models\Repositories\Contracts\OrderInterface;
 use App\Modules\Order\Modules\Note\Models\Entities\Note;
 use App\Modules\Store\Models\Entities\Store;
 use App\Modules\User\Models\Entities\User;
 use Bavix\Wallet\Traits\HasWallet;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -29,19 +28,20 @@ class Order extends AbstractModel
     use HasWallet;
     use Filterable;
 
-    const STATUS_QUOTATION_WAITING = 0; // Chờ báo giá
-    const STATUS_QUOTATION_PENDING = 1; // Chờ bên khách hàng xác nhận giá
-    const ORDER_PENDING = 2; // Đã báo giá thành công - chờ luồng xác nhận phía cửa hàng
-    const STATUS_WAREHOUSE_PENDING = 3; // Gửi tới kho
-    const STATUS_WAREHOUSE_CONFIRMED = 4; // Kho đã xác nhận
-    const STATUS_CONFIRMED = 5; // Toa đã xác nhận
-    const STATUS_CANCEL = 6; // Toa hủy
+    const STATUS_QUOTATION_STORE_WAITING = -4; // Chờ cửa hàng báo giá
+    const STATUS_QUOTATION_CUSTOMER_WAITING_CONFIRM = -3; // Chờ khách hàng xác nhận về giá
+    const ORDER_DRAFT = -2; // Toa nháp
+    const ORDER_PENDING = -1; // Nhân viên bán hàng gửi giỏ hàng tới cho quản lý
+    const ORDER_PENDING_WAREHOUSE = 0; // Nhân viên kho đang nhặt hàng
+    const ORDER_WAREHOUSE_CONFIRM = 1; // Nhân viên kho xác nhận
+    const ORDER_DONE = 2; // Đơn hàng hoàn tất
 
     /* List hành động */
     const ACTION_RA_LOC = 1; // Ra lộc
     const ACTION_DAT_COC = 2; // Đặt cọc
     const ACTION_NO_LAI = 3; // Nợ lại
 
+    protected $connection = 'box';
     protected $table = 'hnw_order';
     protected $primaryKey = 'order_id';
     public static $tableAlias = 'hnw_order';
@@ -52,26 +52,30 @@ class Order extends AbstractModel
      * @var string[]
      */
     protected $fillable = array(
+        'assign_id',
         'store_id',
+        'relation_store_id',
+        'customer_user_id',
         'customer_id',
         'user_id',
-        'warehouse_id',
-        'manager_id',
+        'user_relation_id',
+        'user_manager_id',
+        'user_warehouse_id',
         'action_id',
-        'code',
-        'money_deposit', // Tiền khách đặt cọc
-        'money_fortune', // Tiền khách được lộc từ cửa hàng (Ra lộc)
+        'bill_code',
+        'deposit',
+        'debt_info',
         'total_quantity',
+        'total_receivable',
+        'total_expense',
+        'total_import_price',
         'total_price',
-        'total_receivable', // Phụ thu - Cửa hàng thu của khách
-        'total_expense', // Phụ chi - Cửa hàng chịu phí
-        'money_banking',
         'money_cash',
-        'money_deposit',
-        'has_change_quantity',
-        'has_change_price',
-        'status',
+        'money_banking',
         'note',
+        'status',
+        'expand_state',
+        'transfer_id',
     );
 
     /**
@@ -106,7 +110,7 @@ class Order extends AbstractModel
      * Alias for `order_id`
      *
      * @return int
-     * @author shin_conan <xuanhieu.pd@gmail.com>
+     * @author xuanhieupd
      */
     public function getId()
     {

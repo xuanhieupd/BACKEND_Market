@@ -7,7 +7,7 @@ use App\Modules\Cart\Models\Repositories\Contracts\OrderCartInterface;
 use App\Modules\Cart\Models\Repositories\Eloquents\OrderCartRepository;
 use Illuminate\Http\Request;
 
-class DeleteCartController extends AbstractController
+class EmptyController extends AbstractController
 {
 
     /* @var OrderCartRepository */

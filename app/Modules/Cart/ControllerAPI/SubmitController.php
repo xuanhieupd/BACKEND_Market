@@ -22,6 +22,7 @@ use App\Modules\Order\Models\Repositories\Contracts\ItemInterface;
 use App\Modules\Order\Models\Repositories\Contracts\OrderInterface;
 use App\Modules\Order\Models\Repositories\Eloquents\ItemRepository;
 use App\Modules\Order\Models\Repositories\Eloquents\OrderRepository;
+use App\Modules\Product\Models\Entities\Product;
 use App\Modules\Product\Models\Repositories\Contracts\ProductInterface;
 use App\Modules\Product\Models\Repositories\Eloquents\ProductRepository;
 use App\Modules\Product\Models\Services\StockService;
@@ -31,6 +32,7 @@ use App\Modules\Store\Modules\SettingUser\Models\Repositories\Eloquents\SettingU
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SubmitController extends AbstractController
 {
@@ -103,8 +105,7 @@ class SubmitController extends AbstractController
         $cartRows = $this->cartRepo->getCarts(auth()->id())->get();
         if ($cartRows->isEmpty()) return $this->responseError('Giỏ đang trống');
 
-        $productIds = CollectionHelper::pluckUnique($cartRows, 'product_id')->toArray();
-        $products = $this->productRepo->whereIn('product_id', $productIds)->get();
+        $products = $this->productRepo->whereIn('product_id', CollectionHelper::pluckUnique($cartRows, 'product_id')->toArray())->get();
         $products = $this->productRepo->bindPrice($products, auth()->id());
 
         $settings = $this->settingUserRepo->getSettings()
@@ -116,44 +117,46 @@ class SubmitController extends AbstractController
         try {
             $itemInserts = collect();
 
-            foreach ($this->splitByStores($cartRows) as $storeId => $storeItems) {
+            foreach ($cartRows->groupBy('store_id') as $storeId => $dataRows) {
                 $settingInfo = $settings->where('store_id', $storeId)->first();
 
-                $itemProductIds = CollectionHelper::pluckUnique($storeItems, 'product_id')->toArray();
-                $productItems = $products->whereIn('product_id', $itemProductIds);
-
                 $orderInfo = $this->orderRepo->create(array(
-                    'action_id' => Order::ACTION_NO_LAI,
                     'store_id' => $storeId,
-                    'user_id' => auth()->id(),
                     'customer_id' => $settingInfo ? $settingInfo->getAttribute('customer_id') : -1,
-                    'total_quantity' => $storeItems->sum('quantity'),
-                    'total_price' => $storeItems->sum('total_price'),
-                    'has_change_quantity' => GlobalConstants::STATUS_INACTIVE,
-                    'has_change_price' => GlobalConstants::STATUS_INACTIVE,
-                    'status' => $this->getOrderStatusByProducts($productItems),
-                    'code' => null, 'total_receivable' => 0, 'total_expense' => 0,
-                    'warehouse_id' => null, 'manager_id' => null,
-                    'money_banking' => null, 'money_cash' => null,
-                    'money_deposit' => null, 'money_fortune' => null,
-                    'note' => ''
+                    'customer_user_id' => auth()->id(), 'user_id' => auth()->id(), 'user_relation_id' => auth()->id(),
+                    'user_manager_id' => null, 'user_warehouse_id' => null,
+                    'action_id' => Order::ACTION_NO_LAI,
+                    'bill_code' => implode('_', array(date('dmY'), Str::upper(Str::random(4)))),
+                    'total_quantity' => $dataRows->sum('quantity'),
+                    'total_price' => $dataRows->sum('total_price'),
+                    'status' => $this->getOrderStatusByProducts($products),
+                    'note' => '', 'expand_state' => 0,
+                    'deposit' => 0, 'debt_info' => '',
+                    'assign_id' => 0, 'relation_store_id' => 0, 'total_receivable' => 0, 'total_expense' => 0, 'money_cash' => 0, 'money_banking' => 0,
                 ));
 
-                foreach ($storeItems as $cartRow) {
-                    $productInfo = $products->where('product_id', $cartRow->getAttribute('product_id'))->first();
+                $totalImportPrice = 0;
+                foreach ($dataRows->groupBy('product_id') as $productId => $itemRows) {
+                    $productInfo = $products->where('product_id', $productId)->first();
                     if (!$productInfo) continue;
+
+                    $itemTotalImportPrice = $productInfo->getImportPrice() * $itemRows->sum('quantity');
+                    $totalImportPrice += $itemTotalImportPrice;
 
                     $itemInfo = new Item(array(
                         'order_id' => $orderInfo->getId(),
-                        'product_id' => $cartRow->getAttribute('product_id'),
-                        'variant_id' => $cartRow->getAttribute('variant_id'),
-                        'quantity' => $cartRow->getAttribute('quantity'),
-                        'price' => $cartRow->getAttribute('price'),
-                        'created_at' => now(), 'updated_at' => now(),
+                        'product_id' => $productId,
+                        'total_quantity' => $itemRows->sum('quantity'),
+                        'total_price' => $itemRows->sum('total_price'),
+                        'total_import_price' => $itemTotalImportPrice,
+                        'payload' => json_encode($this->buildPayload($itemRows, $productInfo)),
                     ));
 
                     $itemInserts->push($itemInfo->toArray());
                 }
+
+                $orderInfo->setAttribute('total_import_price', $totalImportPrice);
+                $orderInfo->save();
             }
 
             $this->itemRepo->insert($itemInserts->toArray());
@@ -168,24 +171,26 @@ class SubmitController extends AbstractController
     }
 
     /**
-     * Chia sản phẩm thành các cửa hàng riêng
-     *
-     * @param Collection $cartRows
-     * @return Collection
-     * @author xuanhieupd
+     * @param $items
+     * @param Product $productInfo
+     * @return array
      */
-    protected function splitByStores(Collection $cartRows)
+    protected function buildPayload($items, Product $productInfo)
     {
-        $results = collect();
-        $storeIds = CollectionHelper::pluckUnique($cartRows, 'store_id');
+        $payload = array();
 
-        foreach ($storeIds as $storeId) {
-            $datas = $cartRows->where('store_id', $storeId);
-            $results->put($storeId, $datas);
+        foreach ($items as $itemInfo) {
+            $payload[] = array(
+                'variant_id' => $itemInfo->getAttribute('variant_id'),
+                'quantity' => $itemInfo->getAttribute('quantity'),
+                'price' => $itemInfo->getAttribute('price'),
+                'import_price' => $productInfo->getImportPrice()
+            );
         }
 
-        return $results;
+        return $payload;
     }
+
 
     /**
      * @param $products
@@ -198,7 +203,7 @@ class SubmitController extends AbstractController
         foreach ($products as $productInfo) {
             if (!is_null($productInfo->getMarketPrice())) continue;
 
-            $statusId = Order::STATUS_QUOTATION_WAITING;
+            $statusId = Order::STATUS_QUOTATION_STORE_WAITING;
             break;
         }
 

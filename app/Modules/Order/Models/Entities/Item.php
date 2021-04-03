@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Order Item Model
- *
- * @author shin_conan <xuanhieu.pd@gmail.com>
- * @package User
- * @copyright (c) 03.10.2020, HNW
- */
-
 namespace App\Modules\Order\Models\Entities;
 
 use App\Base\AbstractModel;
@@ -27,16 +19,21 @@ class Item extends AbstractModel implements Product, AlterStockInterface
     use ItemWallet;
     use ItemActivity;
 
-    protected $table = 'hnw_order_item';
-    protected $primaryKey = 'item_id';
-    public static $tableAlias = 'hnw_order_item';
+    protected $connection = 'box';
+    protected $table = 'hnw_order_detail';
+    protected $primaryKey = 'detail_id';
+    public static $tableAlias = 'hnw_order_detail';
 
+    /**
+     * @var string[]
+     */
     protected $fillable = array(
         'order_id',
         'product_id',
-        'variant_id',
-        'quantity',
-        'price',
+        'total_quantity',
+        'total_price',
+        'total_import_price',
+        'payload',
     );
 
     /**
@@ -47,7 +44,7 @@ class Item extends AbstractModel implements Product, AlterStockInterface
      */
     public function getId()
     {
-        return $this->getAttribute('item_id');
+        return $this->getAttribute('detail_id');
     }
 
     /**

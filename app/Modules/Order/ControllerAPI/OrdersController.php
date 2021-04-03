@@ -64,9 +64,11 @@ class OrdersController extends AbstractController
         });
 
         $orders = $this->orderRepo->getUserOrders(auth()->id(), array(), array())
-            ->with(array('orderUser'))
+            ->with(array('orderStore'))
             ->orderBy('order_id', 'DESC')
             ->simplePaginate(10);
+
+//        print_r($orders->toArray());die;
 
         return OrderResource::collection($orders);
     }

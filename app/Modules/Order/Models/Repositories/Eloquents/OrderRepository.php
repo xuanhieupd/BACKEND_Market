@@ -52,7 +52,7 @@ class OrderRepository extends AbstractRepository implements OrderInterface
      */
     public function getUserOrders($userId, array $conditions = array(), array $fetchOptions = array())
     {
-        return $this->getOrders()->where('user_id', $userId);
+        return $this->getOrders()->where('customer_user_id', $userId);
     }
 
     /**

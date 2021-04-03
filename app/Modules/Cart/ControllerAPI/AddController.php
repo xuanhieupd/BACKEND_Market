@@ -61,6 +61,7 @@ class AddController extends AbstractController
                 'price' => $productInfo->getAttribute('whole_price'),
                 'quantity' => $request->getQuantity($variantInfo->getId()),
                 'created_at' => now(), 'updated_at' => now(),
+                'relation_store_id' => 0
             );
         }
 

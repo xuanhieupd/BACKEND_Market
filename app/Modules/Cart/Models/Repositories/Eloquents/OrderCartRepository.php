@@ -11,10 +11,8 @@
 namespace App\Modules\Cart\Models\Repositories\Eloquents;
 
 use App\Base\AbstractRepository;
-use App\Modules\Cart\Exceptions\CartIsEmptyException;
 use App\Modules\Cart\Models\Entities\OrderCart;
 use App\Modules\Cart\Models\Repositories\Contracts\OrderCartInterface;
-use App\Modules\User\Models\Entities\User;
 use Illuminate\Support\Collection;
 
 class OrderCartRepository extends AbstractRepository implements OrderCartInterface

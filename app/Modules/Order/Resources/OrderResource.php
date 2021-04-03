@@ -29,16 +29,11 @@ class OrderResource extends AbstractResource
     {
         return array(
             'order_id' => $this->getId(),
-            'code' => $this->getAttribute('code'),
-            'user' => new UserSimpleResource($this->orderUser),
+            'code' => $this->getAttribute('bill_code'),
             'store' => new StoreResource($this->orderStore),
             'summary' => array(
                 'total_quantity' => $this->getAttribute('total_quantity'),
                 'total_price' => $this->getAttribute('total_price'),
-            ),
-            'changed' => array(
-                'quantity' => $this->isChangedQuantity(),
-                'price' => $this->isChangedPrice(),
             ),
             'status' => $this->getStatus(),
             'created_date' => $this->getCreatedDate(),
