@@ -160,6 +160,7 @@ class SubmitController extends AbstractController
             }
 
             $this->itemRepo->insert($itemInserts->toArray());
+            $this->cartRepo->getCarts(auth()->id())->delete();
 
             DB::commit();
             return $this->responseMessage('Tạo toa thành công');

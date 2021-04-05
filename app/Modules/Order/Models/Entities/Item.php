@@ -4,6 +4,7 @@ namespace App\Modules\Order\Models\Entities;
 
 use App\Base\AbstractModel;
 
+use App\Modules\Base\Helpers\Helper;
 use App\Modules\Order\Models\Traits\ItemActivity;
 use App\Modules\Product\Models\Services\Contracts\AlterStockInterface;
 use App\Modules\Product\Modules\Variant\Models\Entities\Variant;
@@ -11,6 +12,7 @@ use Bavix\Wallet\Traits\HasWallet;
 use Bavix\Wallet\Interfaces\Product;
 use App\Modules\Order\Models\Traits\ItemWallet;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Modules\Product\Models\Entities\Product as ProductEntity;
 
 class Item extends AbstractModel implements Product, AlterStockInterface
 {
@@ -45,6 +47,15 @@ class Item extends AbstractModel implements Product, AlterStockInterface
     public function getId()
     {
         return $this->getAttribute('detail_id');
+    }
+
+    /**
+     * @return array
+     * @author xuanhieupd
+     */
+    public function getPayloadAttribute()
+    {
+        return json_decode($this->original['payload'], true);
     }
 
     /**
@@ -114,14 +125,14 @@ class Item extends AbstractModel implements Product, AlterStockInterface
     }
 
     /**
-     * Thông tin mã hàng
+     * Thông tin sản phẩm
      *
      * @return BelongsTo
      * @author xuanhieupd
      */
-    public function itemVariant()
+    public function itemProduct()
     {
-        return $this->belongsTo(Variant::class, 'variant_id', 'variant_id');
+        return $this->belongsTo(ProductEntity::class, 'product_id', 'product_id');
     }
 
 

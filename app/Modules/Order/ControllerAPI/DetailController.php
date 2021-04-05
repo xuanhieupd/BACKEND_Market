@@ -11,6 +11,7 @@
 namespace App\Modules\Order\ControllerAPI;
 
 use App\Base\AbstractController;
+use App\Modules\Base\Helpers\CollectionHelper;
 use App\Modules\Order\DAO\ProductPicked;
 use App\Modules\Order\Models\Entities\Order;
 use App\Modules\Order\Resources\OrderDetailResource;
@@ -66,6 +67,7 @@ class DetailController extends AbstractController
             'orderStore',
             'orderCustomer',
             'orderProducts',
+            'orderProducts.itemProduct',
         ));
 
         $resourceParams = array(
@@ -104,21 +106,25 @@ class DetailController extends AbstractController
         $variantResults = collect();
 
         $orderProducts = $orderInfo->orderProducts;
-        $variantIds = $orderProducts ? $orderProducts->pluck('variant_id')->toArray() : array();
+        $payloads = collect();
 
+        foreach ($orderProducts as $orderProduct) {
+            $payloads = $payloads->merge(collect($orderProduct->getPayloadAttribute()));
+        }
+
+        $variantIds = CollectionHelper::pluckUnique($payloads, 'variant_id');
         $fetchOptions = array('withs' => array('variantColor', 'variantSize'));
         $variants = $this->variantRepo->getVariantsByIds($variantIds, array(), $fetchOptions);
 
-        foreach ($variants as $variant) {
-            $pickedInfo = $orderProducts->where('variant_id', $variant->getId())->first();
-            if (!$pickedInfo) {
-                continue;
-            }
+        foreach ($variants as $variantInfo) {
+            $pickedInfo = $payloads->where('variant_id', $variantInfo->getId())->first();
+
+            if (!$pickedInfo) continue;
 
             $productPicked = new ProductPicked();
-            $productPicked->setVariant($variant);
-            $productPicked->setQuantity($pickedInfo->getAttribute('quantity'));
-            $productPicked->setPrice($pickedInfo->getAttribute('price'));
+            $productPicked->setVariant($variantInfo);
+            $productPicked->setQuantity($pickedInfo['quantity']);
+            $productPicked->setPrice($pickedInfo['price']);
 
             $variantResults->push($productPicked);
         }
