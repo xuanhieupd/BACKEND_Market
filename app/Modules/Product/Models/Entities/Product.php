@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Product Model
- *
- * @author xuanhieupd
- * @package Product
- * @copyright (c) 04.10.2020, HNW
- */
-
 namespace App\Modules\Product\Models\Entities;
 
 use App\Base\AbstractModel;
@@ -26,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use App\Modules\Likeable\Traits\Likeable;
 
@@ -34,6 +27,7 @@ class Product extends AbstractModel
 
     use Filterable;
     use Likeable;
+    use SoftDeletes;
 
     protected $connection = 'box';
     protected $table = 'hnw_product';
