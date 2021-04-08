@@ -53,8 +53,9 @@ class Item extends AbstractModel implements Product, AlterStockInterface
      * @return array
      * @author xuanhieupd
      */
-    public function getPayloadAttribute()
+    public function getPayload()
     {
+        if (!isset($this->original['payload'])) return array();
         return json_decode($this->original['payload'], true);
     }
 

@@ -109,7 +109,7 @@ class DetailController extends AbstractController
         $payloads = collect();
 
         foreach ($orderProducts as $orderProduct) {
-            $payloads = $payloads->merge(collect($orderProduct->getPayloadAttribute()));
+            $payloads = $payloads->merge(collect($orderProduct->getPayload()));
         }
 
         $variantIds = CollectionHelper::pluckUnique($payloads, 'variant_id');
