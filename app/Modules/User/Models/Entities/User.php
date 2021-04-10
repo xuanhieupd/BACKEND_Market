@@ -94,6 +94,14 @@ class User extends Authenticatable implements Wallet, AuthorInterface
     }
 
     /**
+     * @return string[]
+     */
+    public function getAllPhoneNumbers()
+    {
+        return array($this->getPhoneNumber());
+    }
+
+    /**
      * AvatarUrl
      *
      * @return string

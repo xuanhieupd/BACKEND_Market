@@ -19,6 +19,7 @@ class AuthorResource extends AbstractResource
             'type' => $this->getType(),
             'fullname' => $this->getFullName(),
             'avatar_url' => $this->getAvatarUrl(),
+            'phone_numbers' => $this->getAllPhoneNumbers(),
         );
     }
 

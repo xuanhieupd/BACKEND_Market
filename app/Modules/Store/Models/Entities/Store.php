@@ -105,6 +105,30 @@ class Store extends AbstractModel implements Wallet, AuthorInterface
             'http://via.placeholder.com/150/385898/385898';
     }
 
+
+    /**
+     * @return array
+     */
+    public function getAllPhoneNumbers()
+    {
+        $strPhone = $this->getAttribute('telephone');
+        $phoneSplits = explode('|', $strPhone);
+
+        $phoneNumbers = [];
+
+        foreach ($phoneSplits as $phoneItem) {
+            if (blank($phoneItem)) continue;
+
+            $phoneItem = str_replace(array('.', '-', ','), '', $phoneItem);
+            preg_match('/\d+/', $phoneItem, $matches);
+            if (!isset($matches[0]) || blank($matches[0])) continue;
+
+            $phoneNumbers[] = $matches[0];
+        }
+
+        return $phoneNumbers;
+    }
+
     /**
      * Công khai sản phẩm
      *
