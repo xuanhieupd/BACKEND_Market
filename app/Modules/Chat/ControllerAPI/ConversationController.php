@@ -24,8 +24,6 @@ class ConversationController extends CreateController
             $to = $this->to();
 
             $conversationInfo = Chat::conversations()->between($from, $to);
-            print_r($conversationInfo);die;
-
             if (!$conversationInfo) return $this->responseError('Không thuộc cuộc hội thoại nào');
 
             return new ConversationResource($conversationInfo);
