@@ -21,6 +21,7 @@ class ProfileResource extends AbstractResource
             'user_id' => $this->getId(),
             'fullname' => $this->getFullName(),
             'avatar_url' => $this->getAvatarUrl(),
+            'phone_number' => $this->getPhoneNumber(),
         );
     }
 
