@@ -14,4 +14,7 @@ class GlobalConstants
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
+    const DEVICE_IOS = 'ios';
+    const DEVICE_ANDROID = 'android';
+
 }

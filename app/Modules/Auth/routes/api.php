@@ -6,5 +6,5 @@ Route::group(array('prefix' => 'auth', 'as' => 'auth.'), function () {
 });
 
 Route::group(array('middleware' => array('auth:api'), 'prefix' => 'auth', 'as' => 'auth.'), function () {
-    Route::get('/profile', array('as' => 'profile', 'uses' => 'ProfileController@actionIndex'));
+    Route::post('/profile', array('as' => 'profile', 'uses' => 'ProfileController@actionIndex'));
 });

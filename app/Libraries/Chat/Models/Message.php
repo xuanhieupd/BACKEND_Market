@@ -6,6 +6,7 @@ use App\Libraries\Chat\Models\Extensions\MessageAttachment;
 use App\Libraries\Chat\Models\Extensions\MessageProduct;
 use App\Modules\Attachment\Models\Entities\Attachment;
 use App\Modules\Base\Helpers\CollectionHelper;
+use App\Modules\Chat\Notifications\NotificationService;
 use App\Modules\Product\Models\Entities\Product;
 use Illuminate\Database\Eloquent\Model;
 use App\Libraries\Chat\BaseModel;
@@ -182,6 +183,8 @@ class Message extends BaseModel
 
         $this->broadcastAfterSend($conversationInfo, $participant, $messageInfo);
         $this->createNotifications($messageInfo, $conversationInfo);
+
+        (new NotificationService())->send($participant, $messageInfo);
 
         return $messageInfo;
     }

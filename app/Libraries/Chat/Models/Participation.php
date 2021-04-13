@@ -17,6 +17,8 @@ class Participation extends BaseModel
      */
     protected $fillable = array(
         'conversation_id',
+        'messageable_id',
+        'messageable_type',
         'settings',
     );
 
