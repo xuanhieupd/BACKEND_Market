@@ -253,7 +253,6 @@ class Attachment extends AbstractModel
         );
     }
 
-
     /**
      * @return Filesystem
      * @author xuanhieupd
@@ -263,7 +262,12 @@ class Attachment extends AbstractModel
         if (!$this->filesystem) {
             $diskName = $this->getAttribute('disk');
             $diskName = blank($diskName) ? 'cdn' : $diskName;
-            $this->filesystem = Storage::disk($diskName);
+
+            try {
+                $this->filesystem = Storage::disk($diskName);
+            } catch (\Exception $e) {
+                $this->filesystem = Storage::disk('cdn');
+            }
         }
 
         return $this->filesystem;
