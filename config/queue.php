@@ -41,6 +41,13 @@ return [
             'retry_after' => 90,
         ],
 
+        'box' => [
+            'driver' => 'database',
+            'table' => strtr(':databaseName.hnw_job', array(':databaseName' => env('BOX_DB_DATABASE'))),
+            'queue' => 'default',
+            'retry_after' => 90,
+        ],
+
         'beanstalkd' => [
             'driver' => 'beanstalkd',
             'host' => 'localhost',
