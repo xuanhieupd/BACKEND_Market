@@ -22,6 +22,7 @@ use App\Modules\Order\Models\Repositories\Contracts\ItemInterface;
 use App\Modules\Order\Models\Repositories\Contracts\OrderInterface;
 use App\Modules\Order\Models\Repositories\Eloquents\ItemRepository;
 use App\Modules\Order\Models\Repositories\Eloquents\OrderRepository;
+use App\Modules\Product\Jobs\CalculateProductQuantityJob;
 use App\Modules\Product\Models\Entities\Product;
 use App\Modules\Product\Models\Repositories\Contracts\ProductInterface;
 use App\Modules\Product\Models\Repositories\Eloquents\ProductRepository;
@@ -116,9 +117,11 @@ class SubmitController extends AbstractController
         DB::beginTransaction();
         try {
             $itemInserts = collect();
+            $orders = collect();
 
             foreach ($cartRows->groupBy('store_id') as $storeId => $dataRows) {
                 $settingInfo = $settings->where('store_id', $storeId)->first();
+                $statusId = $this->getOrderStatusByProducts($products);
 
                 $orderInfo = $this->orderRepo->create(array(
                     'store_id' => $storeId,
@@ -129,11 +132,12 @@ class SubmitController extends AbstractController
                     'bill_code' => implode('_', array(date('dmY'), Str::upper(Str::random(4)))),
                     'total_quantity' => $dataRows->sum('quantity'),
                     'total_price' => $dataRows->sum('total_price'),
-                    'status' => $this->getOrderStatusByProducts($products),
+                    'status' => $statusId,
                     'note' => '', 'expand_state' => 0,
                     'deposit' => 0, 'debt_info' => '',
                     'assign_id' => 0, 'relation_store_id' => 0, 'total_receivable' => 0, 'total_expense' => 0, 'money_cash' => 0, 'money_banking' => 0,
                 ));
+
 
                 $totalImportPrice = 0;
                 foreach ($dataRows->groupBy('product_id') as $productId => $itemRows) {
@@ -157,10 +161,19 @@ class SubmitController extends AbstractController
 
                 $orderInfo->setAttribute('total_import_price', $totalImportPrice);
                 $orderInfo->save();
+
+                $orders->push($orderInfo);
             }
 
             $this->itemRepo->insert($itemInserts->toArray());
             $this->cartRepo->getCarts(auth()->id())->delete();
+
+            foreach ($orders as $orderInfo) {
+                if ($orderInfo->getAttribute('status') !== Order::ORDER_PENDING) continue;
+
+                $jobInfo = new CalculateProductQuantityJob($orderInfo, CalculateProductQuantityJob::ACTION_ORDER_CART);
+                app('queue')->connection('box')->pushOn('default', $jobInfo);
+            }
 
             DB::commit();
             return $this->responseMessage('Tạo toa thành công');
