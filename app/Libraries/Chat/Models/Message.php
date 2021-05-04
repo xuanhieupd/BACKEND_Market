@@ -74,7 +74,7 @@ class Message extends BaseModel
      */
     public function getMessageOverview()
     {
-        $authorInfo = $this->participation;
+        $authorInfo = $this->participation->messageable;
         $authorInfo = $authorInfo ? $authorInfo : new User();
 
         switch ($this->getType()) {
