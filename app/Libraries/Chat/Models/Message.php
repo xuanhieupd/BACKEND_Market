@@ -8,6 +8,7 @@ use App\Modules\Attachment\Models\Entities\Attachment;
 use App\Modules\Base\Helpers\CollectionHelper;
 use App\Modules\Chat\Notifications\NotificationService;
 use App\Modules\Product\Models\Entities\Product;
+use App\Modules\User\Models\Entities\User;
 use Illuminate\Database\Eloquent\Model;
 use App\Libraries\Chat\BaseModel;
 use App\Libraries\Chat\Chat;
@@ -66,6 +67,34 @@ class Message extends BaseModel
     public function getType()
     {
         return $this->getAttribute('type');
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageOverview()
+    {
+        $authorInfo = $this->participation;
+        $authorInfo = $authorInfo ? $authorInfo : new User();
+
+        switch ($this->getType()) {
+            case ConfigurationManager::CHAT_MESSAGE_TYPE_ATTACHMENT:
+                return strtr(':fullName gửi đính kèm cho bạn', array(':fullName' => $authorInfo->getFullName()));
+
+            case ConfigurationManager::CHAT_MESSAGE_TYPE_BULK:
+                return strtr(':fullName gửi tin khuyến mãi cho bạn', array(':fullName' => $authorInfo->getFullName()));
+
+            case ConfigurationManager::CHAT_MESSAGE_TYPE_PRODUCT:
+                return strtr(':fullName gửi sản phẩm cho bạn', array(':fullName' => $authorInfo->getFullName()));
+
+            case ConfigurationManager::CHAT_MESSAGE_TYPE_RECORD:
+                return strtr(':fullName gửi bản ghi âm cho bạn', array(':fullName' => $authorInfo->getFullName()));
+
+            case ConfigurationManager::CHAT_MESSAGE_TYPE_TEXT:
+                return $this->getAttribute('body');
+        }
+
+        return 'Đã gửi một tin nhắn chưa được phân loại';
     }
 
     /**

@@ -6,29 +6,12 @@ use App\Libraries\Chat\Models\Message;
 use App\Libraries\Chat\Models\Participation;
 use App\Modules\Base\Helpers\CollectionHelper;
 use App\Modules\Notification\Models\Repositories\Contracts\TokenInterface;
-use App\Modules\Notification\Models\Repositories\Eloquents\TokenRepository;
 use App\Modules\Store\Models\Entities\Store;
 use Illuminate\Support\Collection;
 use Ixudra\Curl\Facades\Curl;
 
 class NotificationService
 {
-
-    protected function getBoxOnesignal()
-    {
-        return array(
-            'app_id' => '4c5f071b-9a7e-469d-b623-020705d0dea1',
-            'secret' => 'NTJmNDQxYWEtMGU0Ny00YTFmLTlkZGQtODRjZmU0NDMyNWIw',
-        );
-    }
-
-    protected function getMarketOnesignal()
-    {
-        return array(
-            'app_id' => 'eeb8c897-fbd3-443a-ae6c-aa39d3a29d92',
-            'secret' => 'NGE5ZDgyMTYtNjdiNy00ZGViLTkxN2EtNTdhY2NlNWJlZTQ0',
-        );
-    }
 
     /**
      * Send notification
@@ -51,7 +34,7 @@ class NotificationService
             'app_id' => $appInfo['app_id'],
             'include_player_ids' => $this->validTokens(CollectionHelper::pluckUnique($tokens, 'token_value')->toArray()),
             'contents' => array(
-                'en' => 'Bạn có tin nhắn mới',
+                'en' => $messageInfo->getMessageOverview()
             ),
         );
 
@@ -102,5 +85,21 @@ class NotificationService
     protected function _getTokenModel()
     {
         return app(TokenInterface::class);
+    }
+
+    protected function getBoxOnesignal()
+    {
+        return array(
+            'app_id' => '4c5f071b-9a7e-469d-b623-020705d0dea1',
+            'secret' => 'NTJmNDQxYWEtMGU0Ny00YTFmLTlkZGQtODRjZmU0NDMyNWIw',
+        );
+    }
+
+    protected function getMarketOnesignal()
+    {
+        return array(
+            'app_id' => 'eeb8c897-fbd3-443a-ae6c-aa39d3a29d92',
+            'secret' => 'NGE5ZDgyMTYtNjdiNy00ZGViLTkxN2EtNTdhY2NlNWJlZTQ0',
+        );
     }
 }
