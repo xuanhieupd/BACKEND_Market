@@ -3,8 +3,7 @@
 namespace App\Modules\User\ControllerAPI;
 
 use App\Base\AbstractController;
-use App\Modules\User\Models\Repositories\Contracts\UserInterface;
-use App\Modules\User\Models\Repositories\Eloquents\UserRepository;
+use App\Modules\User\Http\Middleware\UserMiddleware;
 use App\Modules\User\Resources\FullUserResource;
 use Illuminate\Http\Request;
 
@@ -12,19 +11,13 @@ class UserController extends AbstractController
 {
 
     /**
-     * @var UserRepository
-     */
-    protected $userRepo;
-
-    /**
      * Constructor.
      *
-     * @param UserInterface $userRepo
      * @author xuanhieupd
      */
-    public function __construct(UserInterface $userRepo)
+    public function __construct()
     {
-        $this->userRepo = $userRepo;
+        $this->middleware(array(UserMiddleware::class));
     }
 
     /**
@@ -34,10 +27,7 @@ class UserController extends AbstractController
      */
     public function actionIndex(Request $request)
     {
-        $userIdFromInput = $request->route('userId');
-        $userInfo = $this->userRepo->getUserById($userIdFromInput)->first();
-
-        if (!$userInfo) return $this->responseError('Không tìm thấy thông tin');
+        $userInfo = $request->input('user');
 
         return new FullUserResource($userInfo);
     }

@@ -15,6 +15,7 @@ class FullUserResource extends AbstractResource
     {
         return array(
             'user_id' => $this->getId(),
+            'customer_id' => 1,
             'fullname' => $this->getFullName(),
             'avatar_url' => $this->getAvatarUrl(),
             'phone_number' => $this->getPhoneNumber(),

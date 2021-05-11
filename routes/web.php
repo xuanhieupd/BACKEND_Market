@@ -14,26 +14,6 @@ use Bavix\Wallet\Objects\Cart;
   |
  */
 
-Route::get('/', function () {
-    $customer = \App\Modules\Customer\Models\Entities\Customer::first();
-    echo $customer->balance;
-    die;
-    $user = App\Modules\User\Models\Entities\User::first();
-
-    $product1Item = new App\Modules\Order\Models\Entities\Item();
-    $product2Item = new App\Modules\Order\Models\Entities\Item();
-    $products = collect(array($product1Item, $product2Item));
-
-    $cart = app(Cart::class);
-    foreach ($products as $product) {
-        $cart->addItem($product, 10);
-    }
-
-//    echo $cart->getTotal($customer) . '\n';
-//    print_r($cart);
-//    die;
-
-    $customer->deposit($cart->getTotal($customer));
-
-    return view('welcome');
+Route::group(array('prefix' => 'share', 'as' => 'share.', 'namespace' => '\App\Modules\Share\ControllerPublic'), function () {
+    Route::get('/store/{storeId}', array('as' => 'store', 'uses' => 'StoreController@actionIndex'));
 });

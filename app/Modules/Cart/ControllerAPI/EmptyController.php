@@ -5,6 +5,7 @@ namespace App\Modules\Cart\ControllerAPI;
 use App\Base\AbstractController;
 use App\Modules\Cart\Models\Repositories\Contracts\OrderCartInterface;
 use App\Modules\Cart\Models\Repositories\Eloquents\OrderCartRepository;
+use App\Modules\Cart\Requests\EmptyRequest;
 use Illuminate\Http\Request;
 
 class EmptyController extends AbstractController
@@ -27,14 +28,17 @@ class EmptyController extends AbstractController
     /**
      * Xóa toàn bộ hàng trong giỏ
      *
-     * @param Request $request
+     * @param EmptyRequest $request
      * @return mixed
      * @throws \Exception
      * @author xuanhieupd
      */
-    public function actionIndex(Request $request)
+    public function actionIndex(EmptyRequest $request)
     {
-        $isDeleted = $this->cartRepo->getCarts(auth()->id())->delete();
+        $isDeleted = $this->cartRepo
+            ->getCarts(auth()->id())
+            ->whereIn('store_id', $request->getStoreIds())
+            ->delete();
 
         return $isDeleted ?
             $this->responseMessage('Thành công') :
