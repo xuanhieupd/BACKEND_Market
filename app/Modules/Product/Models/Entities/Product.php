@@ -324,7 +324,7 @@ class Product extends AbstractModel
     public function scopePublic(Builder $builder)
     {
         return $builder
-            ->where('status', GlobalConstants::STATUS_ACTIVE)
+            ->where('show_on_market', GlobalConstants::STATUS_ACTIVE)
             ->whereNotNull('attachment_id')
             ->whereHas('productStore', function ($storeBuilder) {
                 $storeBuilder->where('public_product', GlobalConstants::STATUS_ACTIVE);
