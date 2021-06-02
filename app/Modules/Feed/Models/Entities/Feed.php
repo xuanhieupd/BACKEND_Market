@@ -11,10 +11,14 @@
 namespace App\Modules\Feed\Models\Entities;
 
 use App\Base\AbstractModel;
+use App\Base\Filterable;
 use App\Modules\Attachment\Models\Entities\Attachment;
 use App\Modules\Feed\Modules\Comment\Models\Entities\Comment;
 use App\Modules\Likeable\Traits\Likeable;
 use App\Modules\Product\Models\Entities\Product;
+use App\Modules\Store\Models\Entities\Store;
+use App\Modules\User\Models\Entities\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -26,6 +30,7 @@ use App\Modules\Likeable\Models\Entities\Like;
 class Feed extends AbstractModel
 {
     use Likeable;
+    use Filterable;
 
     protected $table = 'hnw_feed';
     protected $primaryKey = 'feed_id';
@@ -112,6 +117,30 @@ class Feed extends AbstractModel
         return $this->belongsToMany(Product::class, $feedProductTable, 'feed_id', 'product_id')
             ->select($feedProductTable . '.product_id', 'attachment_id', 'sku', 'title', 'retail_price', 'whole_price', 'collaborator_price', 'import_price')
             ->with(array('productAttachment', 'productStoreOnlySetting'));
+    }
+
+    /**
+     * @param Builder $builder
+     * @param $userId
+     * @return Builder
+     */
+    public function filterUserId(Builder $builder, $userId)
+    {
+        return $builder
+            ->where('author_type', User::class)
+            ->where('author_id', $userId);
+    }
+
+    /**
+     * @param Builder $builder
+     * @param $storeId
+     * @return Builder
+     */
+    public function filterStoreId(Builder $builder, $storeId)
+    {
+        return $builder
+            ->where('author_type', Store::class)
+            ->where('author_id', $storeId);
     }
 
     /**

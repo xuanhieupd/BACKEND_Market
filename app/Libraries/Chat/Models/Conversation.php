@@ -25,11 +25,57 @@ class Conversation extends BaseModel
     protected $primaryKey = 'conversation_id';
 
     /**
+     * @param Model $ownerInfo
+     * @param $options
+     *
+     * @return mixed
+     */
+    private function getConversationsList(Model $ownerInfo, $options)
+    {
+        $paginator = $ownerInfo->participation()
+            ->join($this->getTableConversationWithAppend(' ', 'as c'), $this->getTableParticipationWithAppend('.', 'conversation_id'), '=', 'c.conversation_id')
+            ->with([
+                'conversation.participants.messageable',
+                'conversation.lastMessage' => function ($query) use ($ownerInfo) {
+                    $query->join($this->getTableMessageNotificationWithAppend(), $this->getTableMessageNotificationWithAppend('.', 'message_id'), '=', $this->getTableMessageWithAppend('.', 'message_id'))
+                        ->select(array(
+                            $this->getTableMessageNotificationWithAppend('.', '*'),
+                            $this->getTableMessageWithAppend('.', '*'),
+                        ))
+                        ->where($this->getTableMessageNotificationWithAppend('.', 'messageable_id'), $ownerInfo->getKey())
+                        ->where($this->getTableMessageNotificationWithAppend('.', 'messageable_type'), $ownerInfo->getMorphClass())
+                        ->whereNull($this->getTableMessageNotificationWithAppend('.', 'deleted_at'));
+                },
+            ]);
+
+        $searchQuery = data_get($options, 'filters.search', '');
+        if (!blank($searchQuery)) {
+            $paginator = $paginator
+                ->where('messageable_id', 'LIKE', '%' . $searchQuery . '%');
+        }
+
+        if (isset($options['filters']['private'])) {
+            $paginator = $paginator->where('c.private', (bool)$options['filters']['private']);
+        }
+
+        if (isset($options['filters']['direct_message'])) {
+            $paginator = $paginator->where('c.direct_message', (bool)$options['filters']['direct_message']);
+        }
+
+        return $paginator
+            ->orderBy('c.updated_at', 'DESC')
+            ->orderBy('c.conversation_id', 'DESC')
+            ->distinct('c.conversation_id')
+            ->simplePaginate($options['perPage'], [$this->getTableParticipationWithAppend('.', '*'), 'c.*'], $options['pageName'], $options['page']);
+    }
+
+    /**
      * @var string[]
      */
     protected $fillable = array(
         'data',
-        'direct_message'
+        'direct_message',
+        'title',
     );
 
     /**
@@ -188,7 +234,11 @@ class Conversation extends BaseModel
         }
 
         /** @var Conversation $conversation */
-        $conversation = $this->create(['data' => $payload['data'], 'direct_message' => (bool)$payload['direct_message']]);
+        $conversation = $this->create(array(
+            'data' => $payload['data'],
+            'direct_message' => (bool)$payload['direct_message'],
+            'title' => $payload['title'],
+        ));
 
         if ($payload['participants']) {
             $conversation->addParticipants($payload['participants']);
@@ -366,46 +416,6 @@ class Conversation extends BaseModel
                 $paginationParams['pageName'],
                 $paginationParams['page']
             );
-    }
-
-    /**
-     * @param Model $participant
-     * @param $options
-     *
-     * @return mixed
-     */
-    private function getConversationsList(Model $participant, $options)
-    {
-        /** @var Builder $paginator */
-        $paginator = $participant->participation()
-            ->join($this->getTableConversationWithAppend(' ', 'as c'), $this->getTableParticipationWithAppend('.', 'conversation_id'), '=', 'c.conversation_id')
-            ->with([
-                'conversation.participants.messageable',
-                'conversation.lastMessage' => function ($query) use ($participant) {
-                    $query->join($this->getTableMessageNotificationWithAppend(), $this->getTableMessageNotificationWithAppend('.', 'message_id'), '=', $this->getTableMessageWithAppend('.', 'message_id'))
-                        ->select(array(
-                            $this->getTableMessageNotificationWithAppend('.', '*'),
-                            $this->getTableMessageWithAppend('.', '*'),
-                        ))
-                        ->where($this->getTableMessageNotificationWithAppend('.', 'messageable_id'), $participant->getKey())
-                        ->where($this->getTableMessageNotificationWithAppend('.', 'messageable_type'), $participant->getMorphClass())
-                        ->whereNull($this->getTableMessageNotificationWithAppend('.', 'deleted_at'));
-                },
-            ]);
-
-        if (isset($options['filters']['private'])) {
-            $paginator = $paginator->where('c.private', (bool)$options['filters']['private']);
-        }
-
-        if (isset($options['filters']['direct_message'])) {
-            $paginator = $paginator->where('c.direct_message', (bool)$options['filters']['direct_message']);
-        }
-
-        return $paginator
-            ->orderBy('c.updated_at', 'DESC')
-            ->orderBy('c.conversation_id', 'DESC')
-            ->distinct('c.conversation_id')
-            ->simplePaginate($options['perPage'], [$this->getTableParticipationWithAppend('.', '*'), 'c.*'], $options['pageName'], $options['page']);
     }
 
     public function unDeletedCount()

@@ -14,6 +14,7 @@ class ConversationService
 {
     use SetsParticipants;
     use Paginates;
+
     protected $filters = [];
 
     /**
@@ -106,10 +107,10 @@ class ConversationService
     public function get()
     {
         return $this->conversation->getParticipantConversations($this->participant, [
-            'perPage'   => $this->perPage,
-            'page'      => $this->page,
-            'pageName'  => 'page',
-            'filters'   => $this->filters,
+            'perPage' => $this->perPage,
+            'page' => $this->page,
+            'pageName' => 'page',
+            'filters' => $this->filters,
         ]);
     }
 
@@ -170,6 +171,17 @@ class ConversationService
     public function isPrivate($isPrivate = true)
     {
         $this->filters['private'] = $isPrivate;
+
+        return $this;
+    }
+
+    /**
+     * @param $searchQuery
+     * @return $this
+     */
+    public function search($searchQuery)
+    {
+        $this->filters['search'] = $searchQuery;
 
         return $this;
     }

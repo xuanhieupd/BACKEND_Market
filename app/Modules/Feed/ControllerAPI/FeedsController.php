@@ -61,6 +61,7 @@ class FeedsController extends AbstractController
         });
 
         $feeds = $this->feedRepo->getFeeds()
+            ->filter($request->all())
             ->with(array('feedProductsPivot', 'feedAttachments', 'feedAuthor', 'feedLike', 'feedLike.likeUser', 'likeCounter'))
             ->withCount('feedComments')
             ->orderBy('feed_id', 'DESC')

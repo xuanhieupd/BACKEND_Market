@@ -55,7 +55,7 @@ class CreateController extends AbstractController
             return new ConversationResource($conversationInfo);
         } catch (ParticipantException $participantException) {
             return $this->responseError('ParticipantException');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->responseError('Không tạo được cuộc hội thoại');
         }
     }

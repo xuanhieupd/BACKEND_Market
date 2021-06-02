@@ -43,6 +43,8 @@ class FeedResource extends AbstractResource
             'comment_count' => $this->getAttribute('feed_comments_count'),
             'products' => ProductResource::collection($this->getAttribute('products')),
             'attachments' => AttachmentResource::collection($this->feedAttachments),
+            'created_date' => $this->getCreatedDate(),
+            'updated_date' => $this->getUpdatedDate(),
         );
     }
 }

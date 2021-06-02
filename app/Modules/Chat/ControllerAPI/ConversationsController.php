@@ -29,6 +29,7 @@ class ConversationsController extends AbstractController
         $conversations = Chat::conversations()
             ->setPaginationParams($paginationParams)
             ->setParticipant($this->getAuthor($request))
+            ->search($request->get('q', ''))
             ->get();
 
         return ParticipantResource::collection($conversations);

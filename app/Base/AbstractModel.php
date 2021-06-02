@@ -37,5 +37,14 @@ abstract class AbstractModel extends Model
         return $updatedAt ? $this->getAttribute('updated_at')->toDateTimeString() : null;
     }
 
+    public static function wrapDbName($name)
+    {
+        return implode('.', array(self::getTableName(), $name));
+    }
+
+    public static function getTableName()
+    {
+        return (new static())->getTable();
+    }
 
 }

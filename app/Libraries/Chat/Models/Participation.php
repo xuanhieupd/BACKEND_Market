@@ -19,6 +19,7 @@ class Participation extends BaseModel
         'conversation_id',
         'messageable_id',
         'messageable_type',
+        'messageable_name',
         'settings',
     );
 
