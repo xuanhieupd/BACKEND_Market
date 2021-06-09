@@ -79,16 +79,16 @@ class Message extends BaseModel
 
         switch ($this->getType()) {
             case ConfigurationManager::CHAT_MESSAGE_TYPE_ATTACHMENT:
-                return strtr(':fullName gửi đính kèm cho bạn', array(':fullName' => $authorInfo->getFullName()));
+                return strtr('Gửi đính kèm cho bạn', array(':fullName' => $authorInfo->getFullName()));
 
             case ConfigurationManager::CHAT_MESSAGE_TYPE_BULK:
-                return strtr(':fullName gửi tin khuyến mãi cho bạn', array(':fullName' => $authorInfo->getFullName()));
+                return strtr('Gửi tin khuyến mãi cho bạn', array(':fullName' => $authorInfo->getFullName()));
 
             case ConfigurationManager::CHAT_MESSAGE_TYPE_PRODUCT:
-                return strtr(':fullName gửi sản phẩm cho bạn', array(':fullName' => $authorInfo->getFullName()));
+                return strtr('Gửi sản phẩm cho bạn', array(':fullName' => $authorInfo->getFullName()));
 
             case ConfigurationManager::CHAT_MESSAGE_TYPE_RECORD:
-                return strtr(':fullName gửi bản ghi âm cho bạn', array(':fullName' => $authorInfo->getFullName()));
+                return strtr('Gửi bản ghi âm cho bạn', array(':fullName' => $authorInfo->getFullName()));
 
             case ConfigurationManager::CHAT_MESSAGE_TYPE_TEXT:
                 return $this->getAttribute('body');

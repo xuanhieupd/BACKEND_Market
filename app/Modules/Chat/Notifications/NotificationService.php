@@ -36,6 +36,9 @@ class NotificationService
             'contents' => array(
                 'en' => $messageInfo->getMessageOverview()
             ),
+            'headings' => array(
+                'en' => $participationInfo->messageable ? $participationInfo->messageable->getFullName() : 'NoName',
+            )
         );
 
         $dataRes = Curl::to('https://onesignal.com/api/v1/notifications')
