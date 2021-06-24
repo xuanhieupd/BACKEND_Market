@@ -212,7 +212,7 @@ class SubmitController extends AbstractController
      */
     protected function getOrderStatusByProducts($products)
     {
-        $statusId = Order::ORDER_PENDING;
+        $statusId = Order::ORDER_DRAFT;
 
         foreach ($products as $productInfo) {
             if (!is_null($productInfo->getMarketPrice())) continue;
