@@ -8,6 +8,18 @@ use App\Modules\Role\Modules\Permission\Models\Entities\Permission;
 class Role extends AbstractModel
 {
 
+    public static $defaultGuestRoleId = 1;
+    public static $defaultRegisteredRoleId = 2;
+    public static $defaultAdminRoleId = 3;
+    public static $defaultModeratorRoleId = 4;
+    public static $defaultSuperAdminRoleId = 4;
+    public static $defaultTesterRoleId = 4;
+    public static $administrativeName = 'administrator';
+    public static $manageName = 'manager';
+    public static $wareHouseName = 'warehouse';
+    public static $saleName = 'sale';
+    public static $customerName = 'khach';
+
     protected $table = 'hnw_acl_role';
     protected $primaryKey = 'role_id';
     public $timestamps = true;

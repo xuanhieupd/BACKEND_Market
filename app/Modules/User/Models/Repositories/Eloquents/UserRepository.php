@@ -12,6 +12,7 @@ namespace App\Modules\User\Models\Repositories\Eloquents;
 
 use App\Base\AbstractRepository;
 
+use App\Modules\Role\Models\Entities\Role;
 use App\Modules\User\Exceptions\UserNotFoundException;
 use App\Modules\User\Models\Repositories\Contracts\UserInterface;
 use App\Modules\User\Models\Entities\User;
@@ -93,6 +94,14 @@ class UserRepository extends AbstractRepository implements UserInterface
             ->where('user_id', '>=', $supervisorInfo->getLft())
             ->where('user_id', '<=', $supervisorInfo->getRgt())
             ->get();
+    }
+
+    public function getAdminUsers($storeId)
+    {
+        return $this->makeModel()
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', Role::$administrativeName);
+            });
     }
 
     public function register($fillParams)

@@ -17,11 +17,13 @@ use App\Libraries\Chat\Traits\Messageable;
 use App\Modules\Feed\Modules\Comment\Contracts\AuthorInterface;
 use App\Modules\Product\Models\Entities\Product;
 use App\Modules\Store\Modules\SettingUser\Traits\Settingable;
+use App\Modules\User\Models\Entities\User;
 use Bavix\Wallet\Traits\HasWallet;
 use Bavix\Wallet\Interfaces\Wallet;
 use App\Modules\Likeable\Traits\Likeable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Store extends AbstractModel implements Wallet, AuthorInterface
 {
@@ -185,6 +187,18 @@ class Store extends AbstractModel implements Wallet, AuthorInterface
     {
         $balance = $this->getBalanceAttribute();
         return $balance > 0 ? abs($balance) : 0;
+    }
+
+    /**
+     * @param User $userInfo
+     * @return bool
+     */
+    public function liked(User $userInfo)
+    {
+        return DB::connection('box')->table('hnw_follower_user')
+            ->where('user_id', $userInfo->getId())
+            ->where('store_id', $this->getId())
+            ->exists();
     }
 
     /**

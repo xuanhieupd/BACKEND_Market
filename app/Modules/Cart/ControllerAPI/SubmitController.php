@@ -30,6 +30,7 @@ use App\Modules\Product\Models\Services\StockService;
 use App\Modules\Store\Models\Repositories\Eloquents\StoreRepository;
 use App\Modules\Store\Modules\SettingUser\Models\Repositories\Contracts\SettingUserInterface;
 use App\Modules\Store\Modules\SettingUser\Models\Repositories\Eloquents\SettingUserRepository;
+use App\Modules\User\Models\Repositories\Eloquents\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -72,6 +73,11 @@ class SubmitController extends AbstractController
     protected $settingUserRepo;
 
     /**
+     * @var
+     */
+    protected $userRepo;
+
+    /**
      * Constructor.
      *
      * @param $cartRepo
@@ -83,7 +89,8 @@ class SubmitController extends AbstractController
         ItemInterface $itemRepo,
         OrderInterface $orderRepo,
         ProductInterface $productRepo,
-        SettingUserInterface $settingUserRepo
+        SettingUserInterface $settingUserRepo,
+        UserRepository $userRepo
     )
     {
         $this->cartRepo = $cartRepo;
@@ -92,6 +99,7 @@ class SubmitController extends AbstractController
         $this->orderRepo = $orderRepo;
         $this->productRepo = $productRepo;
         $this->settingUserRepo = $settingUserRepo;
+        $this->userRepo = $userRepo;
     }
 
     /**
@@ -114,19 +122,25 @@ class SubmitController extends AbstractController
             ->where('user_id', auth()->id())
             ->get();
 
+
         DB::beginTransaction();
         try {
             $itemInserts = collect();
             $orders = collect();
 
             foreach ($cartRows->groupBy('store_id') as $storeId => $dataRows) {
+                $adminUserInfo = $this->userRepo->getAdminUsers($storeId)->first();
+                if (!$adminUserInfo) return $this->responseError('Không có admin ở cửa hàng này');
+
                 $settingInfo = $settings->where('store_id', $storeId)->first();
                 $statusId = $this->getOrderStatusByProducts($products);
 
                 $orderInfo = $this->orderRepo->create(array(
                     'store_id' => $storeId,
                     'customer_id' => $settingInfo ? $settingInfo->getAttribute('customer_id') : -1,
-                    'customer_user_id' => auth()->id(), 'user_id' => auth()->id(), 'user_relation_id' => auth()->id(),
+                    'customer_user_id' => auth()->id(),
+                    'user_id' => $adminUserInfo->getId(),
+                    'user_relation_id' => auth()->id(),
                     'user_manager_id' => null, 'user_warehouse_id' => null,
                     'action_id' => Order::ACTION_NO_LAI,
                     'bill_code' => implode('_', array(date('dmY'), Str::upper(Str::random(4)))),

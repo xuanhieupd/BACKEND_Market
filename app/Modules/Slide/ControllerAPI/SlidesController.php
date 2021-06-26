@@ -23,7 +23,7 @@ class SlidesController extends AbstractController
     /**
      * Constructor.
      *
-     * @param SlideInterface $slideRepo
+     * @param SlideInterface $slProfileResourceideRepo
      * @author xuanhieupd
      */
     public function __construct(SlideInterface $slideRepo)
