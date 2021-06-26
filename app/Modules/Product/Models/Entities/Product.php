@@ -327,7 +327,7 @@ class Product extends AbstractModel
             ->where('show_on_market', GlobalConstants::STATUS_ACTIVE)
             ->where('is_over', GlobalConstants::STATUS_INACTIVE)
             ->where('status', GlobalConstants::STATUS_ACTIVE)
-            ->whereNotNull('attachment_id')
+//            ->whereNotNull('attachment_id')
             ->whereHas('productStore', function ($storeBuilder) {
                 $storeBuilder->where('public_product', GlobalConstants::STATUS_ACTIVE);
             });
