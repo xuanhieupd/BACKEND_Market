@@ -3,8 +3,10 @@
 namespace App\Modules\Product\ControllerAPI;
 
 use App\Base\AbstractController;
+use App\GlobalConstants;
 use App\Modules\Attachment\Models\Repositories\Contracts\AttachmentInterface;
 use App\Modules\Attachment\Models\Repositories\Eloquents\AttachmentRepository;
+use App\Modules\Follower\Models\Entities\Follower;
 use App\Modules\Product\Models\Entities\Product;
 use App\Modules\Product\Models\Repositories\Contracts\ProductInterface;
 use App\Modules\Product\Models\Repositories\Eloquents\ProductRepository;
@@ -82,9 +84,10 @@ class ProductDetailController extends AbstractController
      */
     protected function bindDisplay(Product $productInfo)
     {
-        $settingInfo = $this->settingUserRepo
-            ->where('store_id', $productInfo->getAttribute('store_id'))
+        $settingInfo = Follower::query()
             ->where('user_id', auth()->id())
+            ->where('store_id', $productInfo->getAttribute('store_id'))
+            ->where('status_id', GlobalConstants::STATUS_ACTIVE)
             ->first();
 
         if ($settingInfo) {

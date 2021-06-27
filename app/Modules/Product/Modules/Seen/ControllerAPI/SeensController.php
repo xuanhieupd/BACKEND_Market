@@ -74,8 +74,13 @@ class SeensController extends AbstractController
 
         $products = $this->productRepo->bindPrice($products, auth()->id());
 
-        foreach ($seens as $seenInfo) {
+        foreach ($seens as $seenIndex => $seenInfo) {
             $productInfo = $products->where('product_id', $seenInfo->getAttribute('product_id'))->first();
+            if (!$productInfo) {
+                $seens->forget($seenIndex);
+                continue;
+            }
+
             $seenInfo->setAttribute('product', $productInfo);
         }
 

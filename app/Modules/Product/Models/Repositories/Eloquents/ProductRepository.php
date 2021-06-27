@@ -11,7 +11,9 @@
 namespace App\Modules\Product\Models\Repositories\Eloquents;
 
 use App\Base\AbstractRepository;
+use App\GlobalConstants;
 use App\Modules\Base\Helpers\CollectionHelper;
+use App\Modules\Follower\Models\Entities\Follower;
 use App\Modules\Product\Exceptions\ProductNotFoundException;
 use App\Modules\Product\Models\Entities\Product;
 use App\Modules\Product\Models\Repositories\Contracts\ProductInterface;
@@ -192,9 +194,10 @@ class ProductRepository extends AbstractRepository implements ProductInterface
 
         $stores = $this->_getStoreModel()->getStores()->whereIn('store_id', $storeIds)->get();
 
-        $settings = $this->_getSettingUserModel()->getSettings()
+        $settings = Follower::query()
             ->whereIn('store_id', $storeIds)
             ->where('user_id', $userId)
+            ->where('status_id', GlobalConstants::STATUS_ACTIVE)
             ->get();
 
         foreach ($products as $productInfo) {
@@ -202,7 +205,7 @@ class ProductRepository extends AbstractRepository implements ProductInterface
             if (!$storeInfo) continue;
 
             $canViewPrice = $this->canViewPrice($storeInfo, $settings);
-            $productInfo->setAttribute('market_price', $canViewPrice ? $productInfo->getWholePrice() : null);
+            $productInfo->setAttribute('canViewPrice', $canViewPrice);
         }
 
         return $products;

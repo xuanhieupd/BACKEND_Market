@@ -18,6 +18,7 @@ class SeenResource extends AbstractResource
     public function toArray($request)
     {
         $productInfo = $this->getAttribute('product');
+
         $productResource = (new ProductResource($productInfo))->toArray($request);
         $productResource['seen_at'] = $this->getUpdatedDate();
 

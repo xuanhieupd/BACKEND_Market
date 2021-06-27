@@ -184,7 +184,8 @@ class Product extends AbstractModel
      */
     public function getMarketPrice()
     {
-        return $this->getAttribute('market_price');
+        $canViewPrice = $this->getAttribute('canViewPrice');
+        return $canViewPrice ? $this->getWholePrice() : null;
     }
 
     /**
@@ -395,6 +396,27 @@ class Product extends AbstractModel
         $categoryIds->push($categoryId);
 
         return $builder->whereIn('category_id', $categoryIds);
+    }
+
+
+    /**
+     * @param Builder $builder
+     * @param $startPrice
+     * @return Builder
+     */
+    public function filterStartPrice(Builder $builder, $startPrice)
+    {
+        return !is_numeric($startPrice) ? $builder : $builder->where('whole_price', '>=', $startPrice);
+    }
+
+    /**
+     * @param Builder $builder
+     * @param $endPrice
+     * @return Builder
+     */
+    public function filterEndPrice(Builder $builder, $endPrice)
+    {
+        return !is_numeric($endPrice) ? $builder : $builder->where('whole_price', '<=', $endPrice);
     }
 
     /**
