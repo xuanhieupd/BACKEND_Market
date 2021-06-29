@@ -83,7 +83,7 @@ return [
         'cdn' => [
             'driver' => 'local',
             'root' => base_path('../nhboxdev/uploads/'),
-            'url' => $boxUrl . '/uploads'
+            'url' => $appUrl . '/uploads'
         ],
         'thumbnail' => [
             'driver' => 'local',
