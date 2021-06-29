@@ -20,10 +20,11 @@ class Role extends AbstractModel
     public static $saleName = 'sale';
     public static $customerName = 'khach';
 
-    protected $table = 'hnw_acl_role';
+    protected $connection = 'box';
+    protected $table = 'hnw_user_role';
     protected $primaryKey = 'role_id';
     public $timestamps = true;
-    public static $tableAlias = 'hnw_acl_role';
+    public static $tableAlias = 'hnw_user_role';
 
     /**
      * @var string[]

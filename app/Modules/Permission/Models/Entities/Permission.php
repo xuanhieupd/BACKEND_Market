@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Permission extends AbstractModel
 {
 
-    protected $table = 'hnw_acl_permission';
+    protected $table = 'hnw_permission';
     protected $primaryKey = 'permission_id';
-    public static $tableAlias = 'hnw_acl_permission';
+    public static $tableAlias = 'hnw_permission';
 
     /**
      * @var string[]

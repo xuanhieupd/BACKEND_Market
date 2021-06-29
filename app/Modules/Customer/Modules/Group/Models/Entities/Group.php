@@ -17,7 +17,7 @@ class Group extends AbstractModel
 
     protected $connection = 'box';
     protected $table = 'hnw_customer_group';
-    protected $primaryKey = 'group_id';
+    protected $primaryKey = 'customer_group_id';
     public static $tableAlias = 'hnw_customer_group';
 
     /**
@@ -28,7 +28,7 @@ class Group extends AbstractModel
      */
     public function getId()
     {
-        return $this->getAttribute('group_id');
+        return $this->getAttribute('customer_group_id');
     }
 
     /**

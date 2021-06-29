@@ -7,7 +7,9 @@ use App\Base\AbstractModelRelation;
 class RolePermission extends AbstractModelRelation
 {
 
-    protected $table = 'hnw_acl_role_permission';
+    protected $connection = 'box';
+    protected $table = 'hnw_permission_role';
+    public static $tableAlias = 'hnw_permission_role';
     protected $primaryKey = array('role_id', 'permission_id');
     public $timestamps = false;
 

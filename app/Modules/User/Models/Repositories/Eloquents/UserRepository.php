@@ -100,7 +100,7 @@ class UserRepository extends AbstractRepository implements UserInterface
     {
         return $this->makeModel()
             ->whereHas('roles', function ($query) {
-                $query->whereIn('name', Role::$administrativeName);
+                $query->whereIn('name', array(Role::$administrativeName));
             });
     }
 
