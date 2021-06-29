@@ -17,11 +17,13 @@ class ProfileResource extends AbstractResource
      */
     public function toArray($request)
     {
+        $userProfile = $this->userProfile;
         return array(
             'user_id' => $this->getId(),
             'fullname' => $this->getFullName(),
             'avatar_url' => $this->getAvatarUrl(),
             'phone_number' => $this->getPhoneNumber(),
+            'profile' => $userProfile ? $userProfile->toResource() : array(),
         );
     }
 
