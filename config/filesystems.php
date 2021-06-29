@@ -4,6 +4,7 @@ $appUrl = env('APP_URL', '');
 $appUrl = trim($appUrl, '/');
 
 $marketUrl = 'http://market.zube.vn';
+$boxUrl = env('BOX_URL', 'http://api.nhbox.vn');
 
 return [
 
@@ -82,7 +83,7 @@ return [
         'cdn' => [
             'driver' => 'local',
             'root' => base_path('../nhboxdev/uploads/'),
-            'url' => $appUrl . '/uploads'
+            'url' => $boxUrl . '/uploads'
         ],
         'thumbnail' => [
             'driver' => 'local',
