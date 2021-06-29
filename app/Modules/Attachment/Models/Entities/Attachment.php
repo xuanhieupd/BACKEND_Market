@@ -105,7 +105,7 @@ class Attachment extends AbstractModel
      * @return string
      * @author xuanhieupd
      */
-    public function getDefaultImageAttribute()
+    public static function getDefaultImageAttribute()
     {
         return Storage::disk('cdn')->url('no-image.png');
     }
@@ -163,7 +163,7 @@ class Attachment extends AbstractModel
         $fileName = $this->getAttribute('file_name');
 
         /* Không tìm thấy ảnh gốc */
-        if (!$this->_checkExists($fileName)) return $this->getDefaultImageAttribute();
+        if (!$this->_checkExists($fileName)) return self::getDefaultImageAttribute();
 
         $filesystemThumbnailInstance = Storage::disk('thumbnail');
         $justFileName = pathinfo($fileName, PATHINFO_FILENAME);
