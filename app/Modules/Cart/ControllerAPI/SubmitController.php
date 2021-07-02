@@ -16,6 +16,7 @@ use App\Modules\Base\Helpers\CollectionHelper;
 use App\Modules\Cart\Models\Repositories\Contracts\OrderCartInterface;
 use App\Modules\Cart\Models\Repositories\Eloquents\OrderCartRepository;
 use App\Modules\Cart\Requests\SubmitRequest;
+use App\Modules\Follower\Models\Entities\Follower;
 use App\Modules\Order\Models\Entities\Item;
 use App\Modules\Order\Models\Entities\Order;
 use App\Modules\Order\Models\Repositories\Contracts\ItemInterface;
@@ -129,8 +130,8 @@ class SubmitController extends AbstractController
             $orders = collect();
 
             foreach ($cartRows->groupBy('store_id') as $storeId => $dataRows) {
-                $adminUserInfo = $this->userRepo->getAdminUsers($storeId)->first();
-                if (!$adminUserInfo) return $this->responseError('Không có admin ở cửa hàng này');
+                $supervisorUser = $this->_getSupervisorUser(auth()->id(), $storeId);
+                if (!$supervisorUser) return $this->responseError('Không có admin ở cửa hàng này');
 
                 $settingInfo = $settings->where('store_id', $storeId)->first();
                 $statusId = $this->getOrderStatusByProducts($products);
@@ -139,7 +140,7 @@ class SubmitController extends AbstractController
                     'store_id' => $storeId,
                     'customer_id' => $settingInfo ? $settingInfo->getAttribute('customer_id') : -1,
                     'customer_user_id' => auth()->id(),
-                    'user_id' => $adminUserInfo->getId(),
+                    'user_id' => $supervisorUser->getId(),
                     'user_relation_id' => auth()->id(),
                     'user_manager_id' => null, 'user_warehouse_id' => null,
                     'action_id' => Order::ACTION_NO_LAI,
@@ -236,6 +237,21 @@ class SubmitController extends AbstractController
         }
 
         return $statusId;
+    }
+
+    /**
+     * @param $userId
+     * @param $storeId
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     * @copyright (c) 9:44 AM, Julyboy
+     * @author Julyboy <cntt0401.luuvietduc@gmail.com>
+     */
+    protected function _getSupervisorUser($userId, $storeId){
+        $supervisor = Follower::query()->where('user_id', $userId)->where('store_id', $storeId)->first();
+        if(!$supervisor){
+            $supervisor = $this->userRepo->getAdminUsers($storeId)->first();
+        }
+        return $supervisor;
     }
 }
 
