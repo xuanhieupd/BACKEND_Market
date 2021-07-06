@@ -200,6 +200,8 @@ class Product extends AbstractModel
             ->select(array(
                 'category_id',
                 'title',
+                'parent_id',
+                'level'
             ));
     }
 

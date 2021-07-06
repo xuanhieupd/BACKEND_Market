@@ -96,6 +96,16 @@ class Category extends AbstractModel
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @copyright (c) 4:15 PM, Julyboy
+     * @author Julyboy <cntt0401.luuvietduc@gmail.com>
+     */
+    public function mapParent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id', 'category_id');
+    }
+
+    /**
      * Lọc danh mục mà cửa hàng bật
      *
      * @param Builder $builder

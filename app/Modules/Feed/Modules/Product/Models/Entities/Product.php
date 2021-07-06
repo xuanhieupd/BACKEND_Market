@@ -17,6 +17,7 @@ class Product extends AbstractModelRelation
     protected $fillable = array(
         'feed_id',
         'product_id',
+        'category_id'
     );
 
     /**
