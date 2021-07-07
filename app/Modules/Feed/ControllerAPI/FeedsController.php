@@ -68,8 +68,8 @@ class FeedsController extends AbstractController
         $userLogin = Auth::user();
 
         $currentPage = $request->get('page');
-        $type = $request->get('type', Feed::TYPE_USER);
-        $authorType = $type == Feed::TYPE_USER ? User::class : Store::class;
+        $type = $request->get('type', Feed::TYPE_STORE);
+        $authorType = $type == Feed::TYPE_STORE ? Store::class : User::class;
 
         Paginator::currentPageResolver(function () use ($currentPage) {
             return $currentPage;
