@@ -67,12 +67,6 @@ class FeedsController extends AbstractController
     {
         $userLogin = Auth::user();
 
-        $categoryIds = $this->categoryRepo->getFollowedCategories($userLogin)
-            ->select(array('category_id'))
-            ->pluck('category_id')
-            ->toArray();
-
-
         $currentPage = $request->get('page');
         $type = $request->get('type', Feed::TYPE_USER);
         $authorType = $type == Feed::TYPE_USER ? User::class : Store::class;
@@ -81,7 +75,15 @@ class FeedsController extends AbstractController
             return $currentPage;
         });
 
-        $conditions = array_merge($request->all(), array('author_type' => $authorType, 'category_ids' => $categoryIds));
+        $conditions = array_merge($request->all(), array('author_type' => $authorType));
+
+        if($type === Feed::TYPE_USER){
+            $categoryIds = $this->categoryRepo->getFollowedCategories($userLogin)
+                ->select(array('category_id'))
+                ->pluck('category_id')
+                ->toArray();
+            $conditions['category_ids'] = $categoryIds;
+        }
 
         $feeds = $this->feedRepo->getFeeds()
             ->filter($conditions)
