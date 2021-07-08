@@ -77,7 +77,7 @@ class FeedsController extends AbstractController
 
         $conditions = array_merge($request->all(), array('author_type' => $authorType));
 
-        if($type === Feed::TYPE_USER){
+        if($type === Feed::TYPE_STORE){
             $categoryIds = $this->categoryRepo->getFollowedCategories($userLogin)
                 ->select(array('category_id'))
                 ->pluck('category_id')
