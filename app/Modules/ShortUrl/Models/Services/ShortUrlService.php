@@ -24,7 +24,7 @@ class ShortUrlService
                 return 'nhboxvnapp://';
 
             case 'M':
-                return 'nhmarketvnapp://';
+                return 'marketvnapp://';
         }
     }
 
