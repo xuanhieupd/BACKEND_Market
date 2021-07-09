@@ -38,7 +38,7 @@ class AbstractController extends BaseController
      * @return mixed
      * @author xuanhieupd
      */
-    public function responseError($error, $responseCode = 400, array $containerParams = array())
+    public function responseError($error="Xảy ra sự cố, vui lòng thử lại sau", $responseCode = 400, array $containerParams = array())
     {
         return response()->responseError($error, $responseCode, $containerParams);
     }

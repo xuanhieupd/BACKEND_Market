@@ -66,7 +66,7 @@ class Profile extends AbstractModel
     {
         $imageOriginal = $this->getOriginal('avatar');
 
-        return FileHelper::getFileUrl($imageOriginal, 'cdn', 'http://via.placeholder.com/150/385898/385898');
+        return $imageOriginal ? FileHelper::getFileUrl($imageOriginal) : 'http://via.placeholder.com/150/385898/385898';
     }
 
     /**

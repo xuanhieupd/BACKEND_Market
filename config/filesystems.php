@@ -4,6 +4,7 @@ $appUrl = env('APP_URL', '');
 $appUrl = trim($appUrl, '/');
 
 $marketUrl = 'http://market.zube.vn';
+$boxUrl = env('BOX_URL', 'http://api.nhbox.vn');
 
 return [
 

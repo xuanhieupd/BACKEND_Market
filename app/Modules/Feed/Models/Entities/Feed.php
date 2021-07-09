@@ -44,6 +44,9 @@ class Feed extends AbstractModel
      * @author xuanhieupd
      * @var array
      */
+    const TYPE_USER = 'USER';
+    const TYPE_STORE = 'STORE';
+
     protected $fillable = array(
         'author_type',
         'author_id',
@@ -115,7 +118,7 @@ class Feed extends AbstractModel
     {
         $feedProductTable = (new FeedProduct())->getTable();
         return $this->belongsToMany(Product::class, $feedProductTable, 'feed_id', 'product_id')
-            ->select($feedProductTable . '.product_id', 'attachment_id', 'sku', 'title', 'retail_price', 'whole_price', 'collaborator_price', 'import_price')
+            ->select($feedProductTable . '.product_id', 'attachment_id', 'sku', 'title', 'retail_price', 'whole_price', 'collaborator_price', 'import_price', 'category_id')
             ->with(array('productAttachment', 'productStoreOnlySetting'));
     }
 
@@ -133,6 +136,19 @@ class Feed extends AbstractModel
 
     /**
      * @param Builder $builder
+     * @param $authorType
+     * @return Builder
+     * @copyright (c) 10:39 AM, Julyboy
+     * @author Julyboy <cntt0401.luuvietduc@gmail.com>
+     */
+    public function filterAuthorType(Builder $builder, $authorType)
+    {
+        return $builder
+            ->where('author_type', $authorType);
+    }
+
+    /**
+     * @param Builder $builder
      * @param $storeId
      * @return Builder
      */
@@ -141,6 +157,21 @@ class Feed extends AbstractModel
         return $builder
             ->where('author_type', Store::class)
             ->where('author_id', $storeId);
+    }
+
+    /**
+     * @param Builder $builder
+     * @param array $categoryIds
+     * @return Builder
+     * @copyright (c) 4:05 PM, Julyboy
+     * @author Julyboy <cntt0401.luuvietduc@gmail.com>
+     */
+    public function filterCategoryIds(Builder $builder, array $categoryIds)
+    {
+        return $builder
+            ->whereHas('feedProductsPivot', function($q) use($categoryIds){
+                $q->whereIn('category_id', $categoryIds);
+            });
     }
 
     /**

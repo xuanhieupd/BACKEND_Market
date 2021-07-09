@@ -73,10 +73,10 @@ class FileHelper
     public static function getFileUrl($filePath, $storage = 'cdn', $defaultImage = false){
         $filesystemInstance = Storage::disk($storage);
 
-        if (!$filesystemInstance->exists($filePath) || !is_file($filesystemInstance->path($filePath))) {
-            return $defaultImage ? $defaultImage : Attachment::getDefaultImageAttribute();
-        }
+//        if (!$filesystemInstance->exists($filePath) || !is_file($filesystemInstance->path($filePath))) {
+//            return $defaultImage ? $defaultImage : Attachment::getDefaultImageAttribute();
+//        }
 
-        return $filesystemInstance->url($filePath) ;
+        return $defaultImage ?: $filesystemInstance->url($filePath) ;
     }
 }
