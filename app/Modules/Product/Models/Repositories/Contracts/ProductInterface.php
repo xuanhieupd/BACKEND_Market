@@ -10,6 +10,11 @@
 
 namespace App\Modules\Product\Models\Repositories\Contracts;
 
+use App\Modules\Product\Models\Repositories\Eloquents\ProductRepository;
+
+/**
+ * @see ProductRepository
+ */
 interface ProductInterface {
 
 }
