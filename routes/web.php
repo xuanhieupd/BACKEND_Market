@@ -14,6 +14,11 @@ use Bavix\Wallet\Objects\Cart;
   |
  */
 
-Route::group(array('prefix' => 'share', 'as' => 'share.', 'namespace' => '\App\Modules\Share\ControllerPublic'), function () {
-    Route::get('/store/{storeId}', array('as' => 'store', 'uses' => 'StoreController@actionIndex'));
+Route::group(array('prefix' => 's', 'as' => 's.', 'namespace' => '\App\Modules\ShortUrl\ControllerPublic'), function () {
+    Route::get('/{code}', array('as' => 'redirect', 'uses' => 'RedirectController@actionIndex'));
+
+    Route::get('/store/{modelId}', array('as' => 'redirect', 'uses' => 'StoreController@actionIndex'));
+    Route::get('/product/{modelId}', array('as' => 'redirect', 'uses' => 'ProductController@actionIndex'));
+    Route::get('/conversation/{modelId}', array('as' => 'redirect', 'uses' => 'ConversationController@actionIndex'));
+    Route::get('/user/{modelId}', array('as' => 'redirect', 'uses' => 'UserController@actionIndex'));
 });

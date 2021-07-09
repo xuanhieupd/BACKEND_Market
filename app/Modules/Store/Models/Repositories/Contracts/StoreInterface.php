@@ -10,6 +10,12 @@
 
 namespace App\Modules\Store\Models\Repositories\Contracts;
 
-interface StoreInterface {
+use App\Modules\Store\Models\Repositories\Eloquents\StoreRepository;
+
+/**
+ * @see StoreRepository
+ */
+interface StoreInterface
+{
 
 }

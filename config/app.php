@@ -176,6 +176,7 @@ return [
         App\Libraries\Chat\ChatServiceProvider::class,
         App\Modules\Chat\Providers\AppServiceProvider::class,
         App\Modules\Notification\Providers\NotificationAppProvider::class,
+        App\Modules\ShortUrl\Providers\ShortUrlAppProvider::class,
     ],
     /*
       |--------------------------------------------------------------------------

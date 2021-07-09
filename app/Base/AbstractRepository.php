@@ -10,6 +10,7 @@
 
 namespace App\Base;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Container\Container as App;
 
@@ -39,6 +40,9 @@ abstract class AbstractRepository
         $this->makeModel();
     }
 
+    /**
+     * @return Builder
+     */
     public function makeModel()
     {
         $model = $this->app->make($this->model());
