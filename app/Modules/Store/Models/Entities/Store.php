@@ -24,6 +24,7 @@ use App\Modules\Likeable\Traits\Likeable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class Store extends AbstractModel implements Wallet, AuthorInterface
 {
@@ -51,6 +52,7 @@ class Store extends AbstractModel implements Wallet, AuthorInterface
     protected $fillable = array(
         'user_id',
         'avatar',
+        'background',
         'title',
         'collaborator_price_percent',
         'retail_price_percent',
@@ -101,10 +103,39 @@ class Store extends AbstractModel implements Wallet, AuthorInterface
      */
     public function getAvatarUrl()
     {
-        $avatarName = $this->getAttribute('avatar');
-        return filter_var($avatarName, FILTER_VALIDATE_URL) ?
-            $avatarName :
-            'http://via.placeholder.com/150/385898/385898';
+//        $avatarName = $this->getAttribute('avatar');
+//        return filter_var($avatarName, FILTER_VALIDATE_URL) ?
+//            $avatarName :
+//            'http://via.placeholder.com/150/385898/385898';
+
+
+        $imageValue = $this->getAttribute('avatar');
+
+        if (blank($imageValue)) {
+            return url('http://via.placeholder.com/150/385898/385898');
+        }
+
+        return (!filter_var($imageValue, FILTER_VALIDATE_URL)) ?
+            Storage::disk('cdn')->url($imageValue) :
+            $imageValue;
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\UrlGenerator|mixed|string
+     * @copyright (c) 3:00 PM, Julyboy
+     * @author Julyboy <cntt0401.luuvietduc@gmail.com>
+     */
+    public function getBackgroundUrlAttribute()
+    {
+        $imageValue = $this->getAttribute('background');
+
+        if (blank($imageValue)) {
+            return url('http://via.placeholder.com/150/385898/385898');
+        }
+
+        return (!filter_var($imageValue, FILTER_VALIDATE_URL)) ?
+            Storage::disk('cdn')->url($imageValue) :
+            $imageValue;
     }
 
 

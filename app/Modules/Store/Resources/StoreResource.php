@@ -19,6 +19,7 @@ class StoreResource extends AbstractResource
         return array(
             'store_id' => $this->getId(),
             'avatar_url' => $this->getAvatarUrl(),
+            'background' => $this->getBackgroundUrlAttribute(),
             'title' => $this->getAttribute('title'),
             'phone_numbers' => $this->getAllPhoneNumbers(),
         );

@@ -50,7 +50,7 @@ class StoresController extends AbstractController
             return $currentPage;
         });
 
-        $stores = $this->storeRepo->getStores()
+         $stores = $this->storeRepo->getStores()
             ->search($request->get('q'))
             ->filter($request->all())
             ->withCount('storeProducts')
