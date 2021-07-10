@@ -15,9 +15,11 @@ class AddAttachmentIdToProductTable extends Migration
     public function up()
     {
         Schema::table((new Product())->getTable(), function (Blueprint $table) {
-            $table->unsignedInteger('attachment_id')
-                ->nullable()
-                ->after('user_id');
+//            if (!Schema::hasColumn('hnw_product', 'attachment_id')) {
+//                $table->unsignedInteger('attachment_id')
+//                    ->nullable()
+//                    ->after('user_id');
+//            }
         });
     }
 
@@ -29,7 +31,7 @@ class AddAttachmentIdToProductTable extends Migration
     public function down()
     {
         Schema::table((new Product())->getTable(), function (Blueprint $table) {
-            $table->dropColumn('attachment_id');
+//            $table->dropColumn('attachment_id');
         });
     }
 }

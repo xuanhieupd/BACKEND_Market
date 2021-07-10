@@ -26,6 +26,8 @@ class AddNestedSetToCategoryTable extends Migration
 
             $table->index(array('lft', 'rgt', 'parent_id'));
         });
+
+        Category::fixTree();
     }
 
     /**

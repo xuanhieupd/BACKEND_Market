@@ -16,7 +16,7 @@ class Attachment extends AbstractModelRelation
      */
     protected $fillable = array(
         'feed_id',
-        'product_id',
+        'attachment_id',
     );
 
     /**

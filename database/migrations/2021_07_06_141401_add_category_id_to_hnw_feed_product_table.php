@@ -13,8 +13,34 @@ class AddCategoryIdToHnwFeedProductTable extends Migration
      */
     public function up()
     {
-        Schema::table('hnw_feed_product', function (Blueprint $table) {
-            $table->unsignedInteger('category_id')->after('product_id');
+        Schema::create('hnw_feed', function (Blueprint $table) {
+            $table->bigIncrements('feed_id');
+            $table->string('author_type');
+            $table->unsignedInteger('author_id');
+            $table->string('title');
+            $table->text('description');
+            $table->timestamps();
+        });
+
+        Schema::create('hnw_feed_product', function (Blueprint $table) {
+            $table->bigInteger('feed_id');
+            $table->unsignedInteger('product_id');
+            $table->unsignedInteger('category_id');
+            $table->index(['feed_id', 'product_id']);
+        });
+
+        Schema::create('hnw_feed_comment', function (Blueprint $table) {
+            $table->unsignedInteger('feed_id');
+            $table->string('author_type');
+            $table->unsignedInteger('author_id');
+            $table->mediumText('message');
+            $table->timestamps();
+        });
+
+        Schema::create('hnw_feed_attachment', function (Blueprint $table) {
+            $table->unsignedInteger('feed_id');
+            $table->unsignedInteger('attachment_id');
+            $table->index(['feed_id', 'attachment_id']);
         });
     }
 
@@ -25,8 +51,9 @@ class AddCategoryIdToHnwFeedProductTable extends Migration
      */
     public function down()
     {
-        Schema::table('hnw_feed_product', function (Blueprint $table) {
-            $table->dropColumn('category_id');
-        });
+        Schema::drop('hnw_feed');
+        Schema::drop('hnw_feed_product');
+        Schema::drop('hnw_feed_comment');
+        Schema::drop('hnw_feed_attachment');
     }
 }
