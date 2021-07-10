@@ -92,7 +92,7 @@ class OrderRepository extends AbstractRepository implements OrderInterface
     public function getUserOrderById($userId, $orderId)
     {
         return $this->makeModel()
-            ->where('user_id', $userId)
+            ->where('customer_user_id', $userId)
             ->where('order_id', $orderId);
     }
 
