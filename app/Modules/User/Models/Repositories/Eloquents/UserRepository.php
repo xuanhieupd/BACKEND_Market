@@ -99,6 +99,7 @@ class UserRepository extends AbstractRepository implements UserInterface
     public function getAdminUsers($storeId)
     {
         return $this->makeModel()
+            ->where('store_id', $storeId)
             ->whereHas('roles', function ($query) {
                 $query->whereIn('name', array(Role::$administrativeName));
             });
