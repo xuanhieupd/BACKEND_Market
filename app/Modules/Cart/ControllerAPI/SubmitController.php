@@ -248,7 +248,7 @@ class SubmitController extends AbstractController
      */
     protected function _getSupervisorUser($userId, $storeId){
         $supervisor = Follower::query()->where('user_id', $userId)->where('store_id', $storeId)->first();
-        if(!$supervisor || $supervisor->supervisor_id){
+        if(!$supervisor || !$supervisor->supervisor_id){
             $supervisor = $this->userRepo->getAdminUsers($storeId)->first();
             return $supervisor->getId();
         }
