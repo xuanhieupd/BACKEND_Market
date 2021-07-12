@@ -33,6 +33,27 @@ class AddLostTable extends Migration
              $table->timestamps();
              $table->index(['product_id', 'user_id']);
         });
+
+        \Illuminate\Support\Facades\DB::table('hnw_slide')->insert(array(
+            array(
+                'user_id' => 1,
+                'image' => 'https://f17-zpg.zdn.vn/8134759026301950677/e4ae3e95521ba645ff0a.jpg',
+                'url' => '#',
+                'status' => 1
+            ),
+            array(
+                'user_id' => 1,
+                'image' => 'https://media.foody.vn/images/beauty-upload-api-675x355-210126112235.jpg',
+                'url' => '#',
+                'status' => 1
+            ),
+            array(
+                'user_id' => 1,
+                'image' => 'https://media.foody.vn/images/beauty-upload-api-675x355-%284%29-210125100259.jpg',
+                'url' => '#',
+                'status' => 1
+            )
+        ));
     }
 
     /**
