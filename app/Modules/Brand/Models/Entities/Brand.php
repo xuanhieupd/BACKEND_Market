@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Brand extends AbstractModel
 {
 
+    protected $connection = 'box';
     protected $table = 'hnw_brand';
     protected $primaryKey = 'brand_id';
     public static $tableAlias = 'hnw_brand';
