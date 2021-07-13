@@ -32,7 +32,7 @@ class OrderDetailResource extends AbstractResource
 
         return array(
             'order_id' => $orderInfo->getId(),
-            'code' => $orderInfo->getAttribute('code'),
+            'code' => $orderInfo->getAttribute('bill_code'),
             'user' => new UserSimpleResource($orderInfo->orderUser),
             'store' => new StoreResource($orderInfo->orderStore),
             'products' => ProductResource::collection($this->resource['products']),

@@ -16,11 +16,18 @@ use Illuminate\Database\Eloquent\Builder;
 class Brand extends AbstractModel
 {
 
-    protected $table = 'hnw_base_brand';
+    protected $table = 'hnw_brand';
     protected $primaryKey = 'brand_id';
-    public static $tableAlias = 'hnw_base_brand';
+    public static $tableAlias = 'hnw_brand';
 
-    protected $fillable = array();
+    /**
+     * @var string[]
+     */
+    protected $fillable = array(
+        'store_id',
+        'title',
+        'status'
+    );
 
     protected $casts = array();
 
