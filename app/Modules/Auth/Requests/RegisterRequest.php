@@ -4,6 +4,7 @@ namespace App\Modules\Auth\Requests;
 
 use App\Base\AbstractRequest;
 use App\Modules\User\Models\Repositories\Contracts\ProfileInterface;
+use App\Modules\User\Models\Repositories\Contracts\UserInterface;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Hash;
 
@@ -55,7 +56,9 @@ class RegisterRequest extends AbstractRequest
         $validator = parent::afterValidator($validator);
 
         $existsPhone = app(ProfileInterface::class)->makeModel()->phoneNumber($this->getPhoneNumber())->first();
-        if ($existsPhone) return $validator->errors()->add('phone_exists', 'Số điện thoại này đã được sử dụng');
+        $existsUsername = app(UserInterface::class)->makeModel()->where('email', $this->getPhoneNumber()->first());
+
+        if ($existsPhone || $existsUsername) return $validator->errors()->add('phone_exists', 'Số điện thoại này đã được sử dụng');
 
         return $validator;
     }
