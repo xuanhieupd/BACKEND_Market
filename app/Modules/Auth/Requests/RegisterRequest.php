@@ -56,7 +56,7 @@ class RegisterRequest extends AbstractRequest
         $validator = parent::afterValidator($validator);
 
         $existsPhone = app(ProfileInterface::class)->makeModel()->phoneNumber($this->getPhoneNumber())->first();
-        $existsUsername = app(UserInterface::class)->makeModel()->where('email', $this->getPhoneNumber()->first());
+        $existsUsername = app(UserInterface::class)->makeModel()->where('email', $this->getPhoneNumber())->first();
 
         if ($existsPhone || $existsUsername) return $validator->errors()->add('phone_exists', 'Số điện thoại này đã được sử dụng');
 
