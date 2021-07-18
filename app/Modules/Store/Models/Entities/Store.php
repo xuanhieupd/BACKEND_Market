@@ -15,6 +15,7 @@ use App\Base\Filterable;
 use App\GlobalConstants;
 use App\Libraries\Chat\Traits\Messageable;
 use App\Modules\Feed\Modules\Comment\Contracts\AuthorInterface;
+use App\Modules\Follower\Models\Entities\Follower;
 use App\Modules\Product\Models\Entities\Product;
 use App\Modules\Store\Modules\SettingUser\Traits\Settingable;
 use App\Modules\User\Models\Entities\User;
@@ -251,5 +252,15 @@ class Store extends AbstractModel implements Wallet, AuthorInterface
     public function scopeSearch(Builder $builder, $searchQuery)
     {
         return blank($searchQuery) ? $builder : $builder->where('title', 'LIKE', '%' . $searchQuery . '%');
+    }
+
+    /**
+     * @return HasMany
+     * @author xuanhieupd
+     */
+    public function storeFollowers()
+    {
+        return $this->hasMany(Follower::class, 'store_id', 'store_id');
+
     }
 }

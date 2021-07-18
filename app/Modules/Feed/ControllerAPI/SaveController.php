@@ -78,15 +78,15 @@ class SaveController extends AbstractController
             $maxImageInAFeed = config('feed.MAX_IMAGE_IN_FEED');
             $countProductInFeed = count($request->getProductIds());
 
-            if($this->_isLimit()){
+            if ($this->_isLimit()) {
                 return $this->responseError('Bạn đã đạt giới hạn đăng bản tin trong ngày hôm nay');
             }
 
-            if($countProductInFeed > $maxProductInAFeed){
+            if ($countProductInFeed > $maxProductInAFeed) {
                 return $this->responseError(strtr('Mỗi tin chỉ được phép thêm tối đa :maxProductInAFeed sản phẩm', array(':maxProductInAFeed' => $maxProductInAFeed)));
             }
 
-            if(count($request->getAttachmentIds()) > $maxImageInAFeed){
+            if (count($request->getAttachmentIds()) > $maxImageInAFeed) {
                 return $this->responseError(strtr('Mỗi tin chỉ được phép thêm tối đa :maxImageInAFeed ảnh', array(':maxImageInAFeed' => $maxImageInAFeed)));
             }
 
@@ -98,8 +98,6 @@ class SaveController extends AbstractController
                 ->get();
 
 
-
-
             $feedInfo = $this->feedRepo->create(array(
                 'author_type' => get_class($authorInfo),
                 'author_id' => $authorInfo->getId(),
@@ -108,7 +106,7 @@ class SaveController extends AbstractController
             ));
 
 
-            if($authorType === Store::class && $countProductInFeed ) {
+            if ($authorType === Store::class && $countProductInFeed) {
                 $products = $this->productRepo
                     ->select(array('product_id', 'category_id'))
                     ->with('productCategory')

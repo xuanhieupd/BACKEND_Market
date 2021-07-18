@@ -64,7 +64,9 @@ class StoreRepository extends AbstractRepository implements StoreInterface
         return $this->makeModel()
             ->conditions($conditions)
             ->options($fetchOptions)
-            ->whereLikedBy($authorInfo);
+            ->whereHas('storeFollowers', function ($childBuilder) use ($authorInfo) {
+                return $childBuilder->where('user_id', $authorInfo->getId());
+            });
     }
 
     /**
