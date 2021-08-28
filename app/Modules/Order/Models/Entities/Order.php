@@ -19,6 +19,7 @@ use App\Modules\Store\Models\Entities\Store;
 use App\Modules\User\Models\Entities\User;
 use Bavix\Wallet\Traits\HasWallet;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -234,6 +235,14 @@ class Order extends AbstractModel
     }
 
     /**
+     * @return BelongsTo
+     */
+    public function orderCustomerUser()
+    {
+        return $this->belongsTo(User::class, 'customer_user_id', 'user_id');
+    }
+
+    /**
      * Thông tin người nhặt hàng
      *
      * @return User
@@ -324,18 +333,20 @@ class Order extends AbstractModel
      */
     public function filterSearch(Builder $builder, $searchQuery)
     {
-        return $builder->where('code', 'LIKE', '%' . $searchQuery . '%')
-            ->orWhereHas('orderCustomer', function ($customerBuilder) use ($searchQuery) {
-                $customerBuilder
-                    ->select(array('fullname'))
-                    ->where('fullname', 'LIKE', '%' . $searchQuery . '%');
-            })
-            ->orWhereHas('orderCustomer.customerPhones', function ($phoneBuilder) use ($searchQuery) {
-                $phoneBuilder
-                    ->select(array('phone_number'))
-                    ->where('phone_number', 'LIKE', '%' . $searchQuery . '%');
-            });
+        if (blank($searchQuery)) return $builder;
 
+        return $builder->where(function ($nestedQuery) use ($searchQuery) {
+            $searchQueryQuote = '%' . $searchQuery . '%';
+
+            return $nestedQuery
+                ->where('bill_code', 'LIKE', $searchQueryQuote)
+                ->orWhereHas('orderCustomerUser', function ($builder) use ($searchQueryQuote) {
+                    $builder->where('fullname', 'LIKE', $searchQueryQuote);
+                })
+                ->orWhereHas('orderCustomerUser.userProfile', function ($builder) use ($searchQueryQuote) {
+                    $builder->where('telephone', 'LIKE', $searchQueryQuote);
+                });
+        });
     }
 
     /**

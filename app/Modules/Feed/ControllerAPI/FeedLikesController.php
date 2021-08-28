@@ -4,7 +4,9 @@ namespace App\Modules\Feed\ControllerAPI;
 
 use App\Base\AbstractController;
 use App\Modules\Feed\Resources\LikeResource;
+use App\Modules\Likeable\Models\Entities\Like;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class FeedLikesController extends AbstractController
 {
@@ -16,10 +18,21 @@ class FeedLikesController extends AbstractController
      */
     public function actionIndex(Request $request)
     {
-        $feedInfo = $request->input('feed');
-        $feedInfo->load(array('likes', 'likes.likeUser'));
+        $currentPage = $request->get('page');
 
-        return LikeResource::collection($feedInfo->likes);
+        Paginator::currentPageResolver(function () use ($currentPage) {
+            return $currentPage;
+        });
+
+        $feedInfo = $request->input('feed');
+
+        $likes = Like::query()
+            ->with(array('likeUser'))
+            ->where('likeable_type', get_class($feedInfo))
+            ->where('likeable_id', $feedInfo->getId())
+            ->simplePaginate(20);
+
+        return LikeResource::collection($likes);
     }
 
 }

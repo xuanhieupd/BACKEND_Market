@@ -223,5 +223,4 @@ class Customer extends AbstractModel implements ICustomer
             ->withDefault();
     }
 
-
 }
