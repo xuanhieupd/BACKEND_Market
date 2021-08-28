@@ -12,6 +12,7 @@ namespace App\Modules\Feed\Modules\Comment\ControllerAPI;
 
 use App\Base\AbstractController;
 use App\Modules\Feed\Modules\Comment\Requests\CommentRequest;
+use App\Modules\Feed\Modules\Comment\Resources\CommentResource;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use App\Modules\Feed\Modules\Comment\Models\Entities\Comment;
@@ -38,9 +39,10 @@ class CommentController extends AbstractController
             'message' => $request->get('message'),
         ));
 
-        return $commentInfo->save() ?
-            $this->responseMessage('Đã bình luận') :
-            $this->responseError('Bình luận thất bại');
+        $commentInfo->save();
+        $commentInfo->load('commentAuthor');
+        
+        return new CommentResource($commentInfo);
     }
 
     /**
