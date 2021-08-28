@@ -2,6 +2,7 @@
 
 Route::group(array('middleware' => array('auth:api')), function () {
     Route::get('/feeds', array('as' => 'feed.list', 'uses' => 'FeedsController@actionIndex'));
+    Route::get('/feed/{feedId}/likes', array('as' => 'feed.list', 'uses' => 'FeedLikesController@actionIndex'))->middleware(\App\Modules\Feed\Http\Middleware\FeedMiddleware::class);
 
     Route::group(array('prefix' => 'feed', 'as' => 'feed.'), function () {
         Route::post('/save', array('as' => 'save', 'uses' => 'SaveController@actionIndex'));

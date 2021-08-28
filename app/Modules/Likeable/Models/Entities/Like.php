@@ -41,9 +41,13 @@ class Like extends AbstractModel
      */
     public function likeUser()
     {
-        return $this->belongsTo(User::class, 'user_id', 'user_id')
+        return $this->belongsTo(User::class, 'author_id', 'user_id')
             ->select(array('user_id', 'fullname', 'avatar'))
             ->withDefault();
+    }
+
+    public function likeAuthor() {
+        return $this->morphTo('author');
     }
 
     /**

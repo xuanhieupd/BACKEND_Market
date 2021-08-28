@@ -39,14 +39,14 @@ class CommentRepository extends AbstractRepository implements CommentInterface
     /**
      * Lấy comment by Id
      *
-     * @param AbstractModel $author
+     * @param  $author
      * @param $commentId
      * @param array $conditions
      * @param array $fetchOptions
      * @return $this
      * @author xuanhieupd
      */
-    public function getAuthorCommentById(AbstractModel $author, $commentId, array $conditions = array(), array $fetchOptions = array())
+    public function getAuthorCommentById($author, $commentId, array $conditions = array(), array $fetchOptions = array())
     {
         return $this->makeModel()
             ->conditions($conditions)
