@@ -21,4 +21,5 @@ Route::group(array('prefix' => 's', 'as' => 's.', 'namespace' => '\App\Modules\S
     Route::get('/product/{modelId}', array('as' => 'redirect', 'uses' => 'ProductController@actionIndex'));
     Route::get('/conversation/{modelId}', array('as' => 'redirect', 'uses' => 'ConversationController@actionIndex'));
     Route::get('/user/{modelId}', array('as' => 'redirect', 'uses' => 'UserController@actionIndex'));
+    Route::get('/feed/{modelId}', array('as' => 'redirect', 'uses' => 'FeedController@actionIndex'));
 });

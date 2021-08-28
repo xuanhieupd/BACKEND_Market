@@ -41,7 +41,7 @@ class CommentController extends AbstractController
 
         $commentInfo->save();
         $commentInfo->load('commentAuthor');
-        
+
         return new CommentResource($commentInfo);
     }
 
