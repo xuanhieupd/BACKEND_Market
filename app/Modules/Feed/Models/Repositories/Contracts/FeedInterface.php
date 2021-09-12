@@ -10,6 +10,9 @@
 
 namespace App\Modules\Feed\Models\Repositories\Contracts;
 
-interface FeedInterface {
+interface FeedInterface
+{
+
+    public function getFeedById($feedId);
 
 }
