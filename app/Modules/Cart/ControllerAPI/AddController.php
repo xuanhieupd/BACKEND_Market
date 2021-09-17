@@ -68,7 +68,9 @@ class AddController extends AbstractController
         $this->cartRepo->getCarts(auth()->id())->whereIn('variant_id', $request->getVariantIds())->delete();
         $this->cartRepo->insert($insertResults);
 
-        return $this->responseMessage('Thành công');
+        $totalProductInCart = $this->cartRepo->getCarts(auth()->id())->count();
+
+        return $this->responseMessage('Thành công', array('total' => $totalProductInCart));
     }
 
 }
