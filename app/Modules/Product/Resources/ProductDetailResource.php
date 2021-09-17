@@ -4,6 +4,8 @@ namespace App\Modules\Product\Resources;
 
 use App\Base\AbstractResource;
 use App\Modules\Attachment\Resources\AttachmentResource;
+use App\Modules\Cart\Models\Repositories\Contracts\OrderCartInterface;
+use App\Modules\Cart\Models\Repositories\Eloquents\OrderCartRepository;
 use App\Modules\Store\Resources\StoreResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +46,16 @@ class ProductDetailResource extends AbstractResource
             'display_id' => $this->getAttribute('displayId'),
             'can_view_price' => !!$this->getAttribute('canViewPrice'),
             'can_view_quantity' => !!$this->getAttribute('canViewQuantity'),
+            'cart_total' => $this->_getCartModel()->getCarts(auth()->id())->sum('quantity')
         );
     }
 
+    /**
+     * @return OrderCartRepository
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @copyright (c) 9/17/2021, @ducluu
+     */
+    protected function _getCartModel(){
+        return app()->make(OrderCartInterface::class);
+    }
 }
