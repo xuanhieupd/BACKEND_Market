@@ -18,8 +18,10 @@ class Like extends AbstractModel
     protected $fillable = array(
         'likeable_id',
         'likeable_type',
-        'user_id',
+//        'user_id',
         'status',
+        'author_type',
+        'author_id'
     );
 
     /**
