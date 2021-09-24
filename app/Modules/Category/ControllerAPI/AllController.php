@@ -3,6 +3,7 @@
 namespace App\Modules\Category\ControllerAPI;
 
 use App\Base\AbstractController;
+use App\GlobalConstants;
 use App\Modules\Category\Models\Repositories\Contracts\CategoryInterface;
 use App\Modules\Category\Models\Repositories\Eloquents\CategoryRepository;
 use App\Modules\Category\Resources\CategoryResource;
@@ -42,6 +43,7 @@ class AllController extends AbstractController
         $builder = $this->categoryRepo->makeModel()
             ->select(array('category_id', 'title', 'parent_id', 'level', 'lft', 'rgt'))
             ->where('category_id', '!=', 0)
+            ->where('init', GlobalConstants::STATUS_ACTIVE)
             ->where('lft', '>', $rootInfo->getAttribute('lft'))
             ->where('rgt', '<', $rootInfo->getAttribute('rgt'));
 
