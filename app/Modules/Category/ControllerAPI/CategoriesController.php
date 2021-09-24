@@ -3,6 +3,7 @@
 namespace App\Modules\Category\ControllerAPI;
 
 use App\Base\AbstractController;
+use App\GlobalConstants;
 use App\Modules\Category\Models\Repositories\Contracts\CategoryInterface;
 use App\Modules\Category\Models\Repositories\Eloquents\CategoryRepository;
 use App\Modules\Category\Resources\CategoryResource;
@@ -41,6 +42,22 @@ class CategoriesController extends AbstractController
         $categories = $this->categoryRepo->makeModel()
             ->select(array('category_id', 'title', 'parent_id'))
             ->filter($request->all())
+            ->get();
+
+        return CategoryResource::collection($categories);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @copyright (c) 9/24/2021, @ducluu
+     */
+    public function actionMain(Request $request)
+    {
+        $categories = $this->categoryRepo->makeModel()
+            ->select(array('category_id', 'title', 'parent_id'))
+            ->where('parent_id', 0)
+            ->where('init', GlobalConstants::STATUS_ACTIVE)
             ->get();
 
         return CategoryResource::collection($categories);
