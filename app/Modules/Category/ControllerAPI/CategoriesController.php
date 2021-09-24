@@ -41,6 +41,7 @@ class CategoriesController extends AbstractController
     {
         $categories = $this->categoryRepo->makeModel()
             ->select(array('category_id', 'title', 'parent_id'))
+            ->where('init', GlobalConstants::STATUS_ACTIVE)
             ->filter($request->all())
             ->get();
 
