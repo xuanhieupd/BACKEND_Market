@@ -106,7 +106,7 @@ class RegisterController extends AbstractController
                 'status' => GlobalConstants::STATUS_ACTIVE,
                 'likeable_id' => $item,
                 'likeable_type' => Category::class,
-                'user_id' => $userInfo->getId(),
+//                'user_id' => $userInfo->getId(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             );
